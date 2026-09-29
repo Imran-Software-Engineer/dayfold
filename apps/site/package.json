@@ -3,8 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
+    "build:lib": "npm run build --prefix ../../packages/dayfold",
+    "dev": "npm run build:lib && astro dev",
+    "build": "npm run build:lib && astro build",
     "preview": "astro preview"
   },
   "dependencies": {
