@@ -13,7 +13,8 @@
     "check": "biome check .",
     "check:fix": "biome check --write .",
     "site:dev": "npm run dev -w dayfold-site",
-    "site:build": "npm run build -w dayfold-site"
+    "site:build": "npm run build -w dayfold-site",
+    "readme": "node scripts/sync-readme.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.2.0",

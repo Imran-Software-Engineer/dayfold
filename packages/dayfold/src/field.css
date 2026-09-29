@@ -21,6 +21,20 @@
   font: inherit;
   max-width: 100%;
 }
+/* Browsers without light-dark() (before Safari 17.5 / Chrome 123 / Firefox 120) get the light theme. */
+@supports not (color: light-dark(#000, #fff)) {
+  .dayfold-field {
+    --dayfold-accent: #1d4ed8;
+    --dayfold-on-accent: #ffffff;
+    --dayfold-accent-soft: #dbe5ff;
+    --dayfold-bg: #ffffff;
+    --dayfold-fg: #16181d;
+    --dayfold-muted: #5b6170;
+    --dayfold-border: #c9ced8;
+    --dayfold-danger: #b42318;
+    --dayfold-focus: #1d4ed8;
+  }
+}
 .dayfold-label {
   font-weight: 600;
   font-size: 0.92em;
