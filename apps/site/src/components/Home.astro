@@ -30,9 +30,9 @@ const jsonLd = {
   '@type': 'SoftwareSourceCode',
   name: 'dayfold',
   description: d.description,
-  codeRepository: import.meta.env.REPO_URL ?? 'https://www.npmjs.com/package/dayfold',
+  codeRepository: import.meta.env.REPO_URL ?? 'https://github.com/Imran-Software-Engineer/dayfold',
   url: Astro.site?.href,
-  sameAs: ['https://www.npmjs.com/package/dayfold'],
+  sameAs: ['https://www.npmjs.com/package/dayfold', 'https://github.com/Imran-Software-Engineer/dayfold'],
   programmingLanguage: ['TypeScript', 'JavaScript'],
   runtimePlatform: 'Web browser',
   license: 'https://opensource.org/licenses/MIT',
@@ -175,7 +175,7 @@ const tabs = [
     </section>
   </main>
   <footer class="site-footer">
-    <p>dayfold · {d.footer}</p>
+    <p>dayfold · {d.footer} · <a href="https://github.com/Imran-Software-Engineer/dayfold">GitHub</a> · <a href="https://www.npmjs.com/package/dayfold">npm</a></p>
   </footer>
 </Base>
 

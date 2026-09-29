@@ -3,6 +3,18 @@
   "version": "0.1.0",
   "description": "Headless, accessible, tiny date picker for any framework. Hijri, Persian and every Intl calendar built in — zero dependencies.",
   "license": "MIT",
+  "author": {
+    "name": "Imran",
+    "url": "https://github.com/Imran-Software-Engineer"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Imran-Software-Engineer/dayfold.git",
+    "directory": "packages/dayfold"
+  },
+  "bugs": {
+    "url": "https://github.com/Imran-Software-Engineer/dayfold/issues"
+  },
   "homepage": "https://dayfold.vercel.app",
   "type": "module",
   "sideEffects": [

@@ -1,5 +1,7 @@
 # dayfold monorepo
 
+Headless, accessible date picker — [docs & demos](https://dayfold.vercel.app) · [npm](https://www.npmjs.com/package/dayfold)
+
 | Path | What |
 | --- | --- |
 | [`packages/dayfold`](packages/dayfold) | The npm package — headless, accessible date picker ([README](packages/dayfold/README.md)) |
