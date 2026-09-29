@@ -2,9 +2,9 @@ export type Lang = 'en' | 'ar'
 
 export const t = {
   en: {
-    title: 'dayfold — the headless, accessible, tiny date picker',
+    title: 'dayfold — Accessible Headless Date Picker for React & Vue',
     description:
-      'A 7 kB headless date picker for React, Vue and vanilla JS. WCAG 2.2 keyboard and screen-reader support, Hijri (Umm al-Qura), Persian and every Intl calendar built in. Zero dependencies.',
+      'Tiny (7 kB) accessible date picker for React, Vue and JS. Headless, WCAG 2.2, range selection, Hijri, Persian and every Intl calendar. Zero dependencies.',
     nav: {
       docs: 'Docs',
       gallery: 'Gallery',
@@ -128,9 +128,9 @@ export const t = {
     footer: 'MIT licensed. Built for every calendar.',
   },
   ar: {
-    title: 'dayfold — منتقي تاريخ خفيف وسهل الوصول وبلا واجهة جاهزة',
+    title: 'dayfold — منتقي تاريخ هجري وميلادي سهل الوصول لـ React وVue',
     description:
-      'منتقي تاريخ بحجم 7 كيلوبايت لـ React وVue وJavaScript. دعم كامل للوحة المفاتيح وقارئات الشاشة، والتقويم الهجري (أم القرى) والفارسي وكل تقاويم Intl مدمجة. بلا أي اعتماديات.',
+      'منتقي تاريخ خفيف (7 كيلوبايت) لـ React وVue وJavaScript: التقويم الهجري أم القرى، دعم RTL، سهولة الوصول WCAG 2.2، واختيار النطاق. بلا اعتماديات.',
     nav: {
       docs: 'التوثيق',
       gallery: 'المعرض',

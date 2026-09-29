@@ -1,5 +1,12 @@
 # dayfold
 
+[![npm](https://img.shields.io/npm/v/dayfold)](https://www.npmjs.com/package/dayfold)
+[![minzipped size](https://img.shields.io/bundlephobia/minzip/dayfold)](https://bundlephobia.com/package/dayfold)
+[![license](https://img.shields.io/npm/l/dayfold)](./LICENSE)
+[![types](https://img.shields.io/npm/types/dayfold)](https://www.npmjs.com/package/dayfold)
+
+**[Docs & live demos](https://dayfold.vercel.app)** · [API](https://dayfold.vercel.app/docs/) · [العربية](https://dayfold.vercel.app/ar/)
+
 **The headless, accessible, tiny date picker.** Every `Intl` calendar — Hijri (Umm al-Qura), Persian, Hebrew and more — in about 7 kB, with zero dependencies. You bring the markup and styles; dayfold handles the calendar math, keyboard navigation, ARIA and focus.
 
 ```bash

@@ -3,36 +3,91 @@
   "version": "0.1.0",
   "description": "Headless, accessible, tiny date picker for any framework. Hijri, Persian and every Intl calendar built in — zero dependencies.",
   "license": "MIT",
+  "homepage": "https://dayfold.vercel.app",
   "type": "module",
-  "sideEffects": ["*.css"],
-  "engines": { "node": ">=18" },
+  "sideEffects": [
+    "*.css"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
   "exports": {
-    ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
-    "./react": { "types": "./dist/react.d.ts", "default": "./dist/react.js" },
-    "./react/field": { "types": "./dist/react/field.d.ts", "default": "./dist/react/field.js" },
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./react": {
+      "types": "./dist/react.d.ts",
+      "default": "./dist/react.js"
+    },
+    "./react/field": {
+      "types": "./dist/react/field.d.ts",
+      "default": "./dist/react/field.js"
+    },
     "./field.css": "./dist/field.css",
-    "./vue": { "types": "./dist/vue.d.ts", "default": "./dist/vue.js" },
-    "./dom": { "types": "./dist/dom.d.ts", "default": "./dist/dom.js" },
-    "./shortcuts": { "types": "./dist/shortcuts.d.ts", "default": "./dist/shortcuts.js" },
-    "./locales/ar": { "types": "./dist/locales/ar.d.ts", "default": "./dist/locales/ar.js" },
+    "./vue": {
+      "types": "./dist/vue.d.ts",
+      "default": "./dist/vue.js"
+    },
+    "./dom": {
+      "types": "./dist/dom.d.ts",
+      "default": "./dist/dom.js"
+    },
+    "./shortcuts": {
+      "types": "./dist/shortcuts.d.ts",
+      "default": "./dist/shortcuts.js"
+    },
+    "./locales/ar": {
+      "types": "./dist/locales/ar.d.ts",
+      "default": "./dist/locales/ar.js"
+    },
     "./package.json": "./package.json"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist", "README.md", "LICENSE"],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "keywords": [
-    "date-picker", "datepicker", "calendar", "headless", "accessible", "a11y", "wcag", "aria",
-    "hijri", "umm-al-qura", "islamic-calendar", "persian", "jalali", "rtl", "arabic", "i18n",
-    "intl", "temporal", "range-picker", "react", "vue", "vanilla", "lightweight", "zero-dependency"
+    "date-picker",
+    "datepicker",
+    "calendar",
+    "headless",
+    "accessible",
+    "a11y",
+    "wcag",
+    "aria",
+    "hijri",
+    "umm-al-qura",
+    "islamic-calendar",
+    "persian",
+    "jalali",
+    "rtl",
+    "arabic",
+    "i18n",
+    "intl",
+    "temporal",
+    "range-picker",
+    "react",
+    "vue",
+    "vanilla",
+    "lightweight",
+    "zero-dependency"
   ],
   "peerDependencies": {
     "react": ">=18.0.0",
     "vue": ">=3.5.0"
   },
   "peerDependenciesMeta": {
-    "react": { "optional": true },
-    "vue": { "optional": true }
+    "react": {
+      "optional": true
+    },
+    "vue": {
+      "optional": true
+    }
   },
   "scripts": {
     "build": "node scripts/build.mjs",
@@ -40,7 +95,7 @@
     "test:watch": "vitest",
     "size": "node scripts/size.mjs",
     "typecheck": "tsc --noEmit",
-    "prepublishOnly": "npm run build && npm test && npm run size"
+    "prepublishOnly": "node scripts/check-publish.mjs && npm run build && npm test && npm run size"
   },
   "devDependencies": {
     "@testing-library/react": "^16.3.0",
@@ -52,5 +107,8 @@
     "react-dom": "^19.1.0",
     "vitest": "^3.2.4",
     "vue": "^3.5.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

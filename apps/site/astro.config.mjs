@@ -8,6 +8,7 @@ export default defineConfig({
     react(),
     sitemap({
       i18n: { defaultLocale: 'en', locales: { en: 'en', ar: 'ar' } },
+      serialize: (item) => ({ ...item, lastmod: new Date().toISOString() }),
     }),
   ],
   trailingSlash: 'always',
