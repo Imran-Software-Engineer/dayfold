@@ -1,0 +1,19 @@
+{
+  "name": "dayfold-monorepo",
+  "private": true,
+  "type": "module",
+  "workspaces": ["packages/*", "apps/*"],
+  "scripts": {
+    "build": "npm run build -w dayfold",
+    "test": "npm run test -w dayfold",
+    "size": "npm run size -w dayfold",
+    "check": "biome check .",
+    "check:fix": "biome check --write .",
+    "site:dev": "npm run dev -w dayfold-site",
+    "site:build": "npm run build -w dayfold && npm run build -w dayfold-site"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.2.0",
+    "typescript": "^5.7.0"
+  }
+}
