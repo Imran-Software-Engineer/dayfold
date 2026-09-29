@@ -3,9 +3,9 @@ import { brotliCompressSync, gzipSync } from 'node:zlib'
 import { build } from 'esbuild'
 
 const budgets = {
-  'dayfold (createDatePicker)': ["import { createDatePicker } from './src/index.ts'", 7],
-  'dayfold/react': ["import { useDatePicker } from './src/react.ts'", 7.2],
-  'dayfold/vue': ["import { useDatePicker } from './src/vue.ts'", 7.5],
+  'dayfold (createDatePicker)': ["import { createDatePicker } from './src/index.ts'", 7.5],
+  'dayfold/react': ["import { useDatePicker } from './src/react.ts'", 7.7],
+  'dayfold/vue': ["import { useDatePicker } from './src/vue.ts'", 8],
   'dayfold/dom': ["import { spread, h } from './src/dom.ts'", 0.5],
   'dayfold/shortcuts': ["import { withShortcuts } from './src/shortcuts.ts'", 2.5],
 }

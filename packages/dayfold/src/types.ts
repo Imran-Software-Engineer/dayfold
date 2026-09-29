@@ -63,6 +63,12 @@ export interface DatePickerOptions<M extends SelectionMode = 'single'> {
 
   /** How many months to show side by side. Default 1. */
   numberOfMonths?: number
+  /**
+   * Years offered by `getYearOptions()` / `getYearSelectProps()`, in the calendar's own
+   * numbering (e.g. 1448 for Hijri). Defaults to the years of `min` / `max`, otherwise
+   * 100 years back and 50 years ahead of today.
+   */
+  years?: { from?: number; to?: number }
   /** Always return 6 weeks per month so the grid never changes height (prevents layout shift). Default `true`. */
   fixedWeeks?: boolean
   /** Which date gets keyboard focus / is visible initially. Defaults to the selection, then today. */
@@ -146,6 +152,14 @@ export interface CalendarMonth {
   secondaryLabel?: string
   labelId: string
   weeks: CalendarDay[][]
+}
+
+/** An entry for a month or year dropdown. */
+export interface SelectOption {
+  value: number
+  label: string
+  /** Entirely outside `min` / `max`. */
+  disabled: boolean
 }
 
 export interface Weekday {

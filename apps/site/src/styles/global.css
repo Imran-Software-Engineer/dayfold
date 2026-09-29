@@ -405,6 +405,66 @@ main {
   padding-inline-end: 96px;
   margin-bottom: 8px;
 }
+*:is(.df-jump) + .df-subtitle {
+  margin-top: 6px;
+}
+.df-jump {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.df-select {
+  appearance: none;
+  min-height: 40px;
+  padding: 6px 30px 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6' fill='none' stroke='%23888' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E")
+      right 10px center / 12px no-repeat,
+    transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  max-width: 100%;
+}
+[dir='rtl'] .df-select {
+  padding: 6px 12px 6px 30px;
+  background-position:
+    left 10px center,
+    0 0;
+}
+.df-select:hover {
+  background-color: var(--paper-2);
+}
+.df-select option {
+  background: var(--card);
+  color: var(--ink);
+}
+.hc-select {
+  font: 600 1.15rem var(--serif);
+}
+:lang(ar) .hc-select,
+.hij-select {
+  font-family: 'IBM Plex Sans Arabic', var(--sans);
+}
+.alm-select {
+  font: italic 600 1.25rem var(--serif);
+  border-color: #d9cfbc;
+  color: #1c1914;
+}
+.alm-select option {
+  background: #fbf6ea;
+  color: #1c1914;
+}
+.alm-select:hover {
+  background-color: #efe6d3;
+}
+.st-select,
+.lb-select {
+  font-size: 0.95rem;
+}
 table.df-grid {
   width: 100%;
   border-collapse: collapse;
@@ -674,6 +734,20 @@ table.df-grid {
 .con-head h3 {
   font: 500 1rem var(--mono);
   color: #7ee787;
+}
+.con-jump {
+  display: flex;
+  gap: 6px;
+}
+.con-jump select {
+  font: 500 0.95rem var(--mono);
+  background: #0f1410;
+  color: #7ee787;
+  border: 1px dashed #3c4d3c;
+  border-radius: 4px;
+  min-height: 36px;
+  padding: 4px 8px;
+  cursor: pointer;
 }
 .con button {
   font-family: var(--mono);

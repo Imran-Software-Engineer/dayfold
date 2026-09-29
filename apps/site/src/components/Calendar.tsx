@@ -14,6 +14,8 @@ interface CalendarProps {
   /** Adds a fold-in animation whenever the month changes. */
   fold?: boolean
   headingLevel?: 'h2' | 'h3'
+  /** Month + year dropdowns in the first month's header. Default true. */
+  dropdowns?: boolean
 }
 
 /**
@@ -28,6 +30,7 @@ export function Calendar({
   renderExtra,
   fold,
   headingLevel: Heading = 'h3',
+  dropdowns = true,
 }: CalendarProps) {
   const rtl = dp.getDirection() === 'rtl'
   return (
@@ -41,16 +44,37 @@ export function Calendar({
         </button>
       </div>
       <div className={`df-months ${p}-months`}>
-        {dp.months.map((month) => (
-          <div className={`df-month ${p}-month`} key={month.start}>
+        {dp.months.map((month, i) => (
+          // Keyed by position so the dropdowns keep focus when the month changes.
+          // biome-ignore lint/suspicious/noArrayIndexKey: stable slots, see above
+          <div className={`df-month ${p}-month`} key={i}>
             <div className={`df-head ${p}-head`}>
+              {/* The heading labels the grid; with dropdowns it stays for screen readers only. */}
               <Heading
-                className={`df-title ${p}-title`}
+                className={`df-title ${p}-title${dropdowns && i === 0 ? ' sr-only' : ''}`}
                 {...dp.getMonthLabelProps(month)}
                 suppressHydrationWarning
               >
                 {month.label}
               </Heading>
+              {dropdowns && i === 0 && (
+                <div className={`df-jump ${p}-jump`}>
+                  <select className={`df-select ${p}-select`} {...dp.getMonthSelectProps()}>
+                    {dp.monthOptions.map((m) => (
+                      <option key={m.value} value={m.value} disabled={m.disabled}>
+                        {m.label}
+                      </option>
+                    ))}
+                  </select>
+                  <select className={`df-select ${p}-select`} {...dp.getYearSelectProps()}>
+                    {dp.yearOptions.map((y) => (
+                      <option key={y.value} value={y.value} disabled={y.disabled}>
+                        {y.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
               {showSecondary && month.secondaryLabel && (
                 <p className={`df-subtitle ${p}-subtitle`} suppressHydrationWarning>
                   {month.secondaryLabel}

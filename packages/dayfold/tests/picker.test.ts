@@ -58,6 +58,57 @@ describe('calendar data', () => {
   })
 })
 
+describe('month and year dropdowns', () => {
+  const change = (props: Record<string, any>, value: number) =>
+    props.onChange({ currentTarget: { value: String(value) } })
+
+  it('jumps straight to a month or year, keeping the day of month', () => {
+    const dp = createDatePicker(base)
+    expect(dp.getMonthOptions().map((m) => m.label)[0]).toBe('January')
+    expect(dp.getMonthSelectProps()).toMatchObject({ 'aria-label': 'Month', value: '8' })
+    expect(dp.getYearSelectProps().value).toBe('2026')
+    change(dp.getYearSelectProps(), 1990)
+    expect(dp.getState().focusedDate).toBe('1990-09-29')
+    change(dp.getMonthSelectProps(), 1)
+    expect(dp.getState().focusedDate).toBe('1990-02-28')
+    expect(dp.getMonths()[0].label).toBe('February 1990')
+  })
+
+  it('offers a sensible year range, clamped by min / max and the years option', () => {
+    const years = createDatePicker(base).getYearOptions()
+    expect(years[0].value).toBe(1926)
+    expect(years.at(-1)!.value).toBe(2076)
+    const bounded = createDatePicker({ ...base, min: '2026-03-10', max: '2028-01-01' })
+    expect(bounded.getYearOptions().map((y) => y.value)).toEqual([2026, 2027, 2028])
+    expect(
+      bounded
+        .getMonthOptions()
+        .filter((m) => m.disabled)
+        .map((m) => m.value),
+    ).toEqual([0, 1])
+    const custom = createDatePicker({ ...base, years: { from: 2020, to: 2030 } })
+    expect(custom.getYearOptions()).toHaveLength(11)
+  })
+
+  it('works in the Hijri calendar with localised labels', () => {
+    const dp = createDatePicker({ ...base, locale: 'ar-SA', calendar: 'islamic-umalqura' })
+    expect(dp.getYearSelectProps()).toMatchObject({ 'aria-label': 'Year', value: '1448' })
+    expect(dp.getMonthOptions()).toHaveLength(12)
+    expect(dp.getYearOptions().find((y) => y.value === 1448)!.label).toBe('١٤٤٨')
+    change(dp.getMonthSelectProps(), 8) // Ramadan
+    expect(dp.getMonths()[0].label).toContain('رمضان')
+    change(dp.getYearSelectProps(), 1450)
+    expect(dp.getMonths()[0].label).toContain('١٤٥٠')
+  })
+
+  it('handles the 13-month Hebrew leap year', () => {
+    const dp = createDatePicker({ ...base, calendar: 'hebrew', today: '2024-01-15' })
+    expect(dp.getMonthOptions()).toHaveLength(13) // 5784 is a leap year
+    dp.goToYear(5785)
+    expect(dp.getMonthOptions()).toHaveLength(12)
+  })
+})
+
 describe('keyboard navigation', () => {
   it('moves by day, week, month and year', () => {
     const dp = createDatePicker(base)

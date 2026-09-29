@@ -40,7 +40,25 @@ export function Console({ lang }: { lang: Lang }) {
       </div>
       <div className="con-head">
         <button {...dp.getPrevButtonProps()}>[&lt;]</button>
-        <h3 {...dp.getMonthLabelProps(month)}>{month.label.toLowerCase()}</h3>
+        <h3 className="sr-only" {...dp.getMonthLabelProps(month)}>
+          {month.label}
+        </h3>
+        <div className="con-jump">
+          <select {...dp.getMonthSelectProps()}>
+            {dp.monthOptions.map((m) => (
+              <option key={m.value} value={m.value}>
+                {m.label.slice(0, 3).toLowerCase()}
+              </option>
+            ))}
+          </select>
+          <select {...dp.getYearSelectProps()}>
+            {dp.yearOptions.map((y) => (
+              <option key={y.value} value={y.value}>
+                {y.label}
+              </option>
+            ))}
+          </select>
+        </div>
         <button {...dp.getNextButtonProps()}>[&gt;]</button>
       </div>
       <table {...dp.getGridProps(month)}>

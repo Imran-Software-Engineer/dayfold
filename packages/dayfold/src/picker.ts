@@ -1,4 +1,4 @@
-import { addMonths, getParts, monthLength, monthStart } from './calendar'
+import { addMonths, fromParts, getParts, monthLength, monthStart } from './calendar'
 import { DAY_MS, type ISODate, isoToEpoch, today, toISO, toISODate, weekday } from './date'
 import { defaultLabels, type Labels } from './labels'
 import { getDirection, getWeekend, getWeekStart } from './locale'
@@ -11,6 +11,7 @@ import type {
   DateRange,
   Props,
   SelectionMode,
+  SelectOption,
   ValueChangeDetails,
   ValueInput,
   ValueOf,
@@ -252,6 +253,77 @@ export function createDatePicker<M extends SelectionMode = 'single'>(
     state = { ...state, visibleDate: toISO(first), focusedDate: toISO(focusTarget) }
     say(labels().monthChanged(visibleLabel()))
     emit()
+  }
+
+  /** Jumps the view (and focus) to the month containing epoch day `e`, keeping the day of month. */
+  const jumpTo = (e: number) => {
+    const c = cal()
+    const start = monthStart(c, e)
+    const day = getParts(c, isoToEpoch(state.focusedDate)).day
+    const target = clamp(start + Math.min(day, monthLength(c, start)) - 1)
+    state = { ...state, focusedDate: toISO(target), visibleDate: toISO(target) }
+    say(labels().monthChanged(visibleLabel()))
+    emit()
+  }
+
+  /** Month starts of the calendar year shown first (12 or 13 of them). */
+  const yearMonths = (): number[] => {
+    const c = cal()
+    let s = firstMonth()
+    const year = getParts(c, s).year
+    while (getParts(c, s - 1).year === year) s = monthStart(c, s - 1)
+    const list: number[] = []
+    for (; getParts(c, s).year === year; s += monthLength(c, s)) list.push(s)
+    return list
+  }
+
+  const getMonthOptions = (): SelectOption[] =>
+    yearMonths().map((start, value) => ({
+      value,
+      label: format(toISO(start), { month: 'long' }),
+      disabled: start + monthLength(cal(), start) - 1 < minE() || start > maxE(),
+    }))
+
+  const yearOf = (e: number) => getParts(cal(), e).year
+
+  const getYearOptions = (): SelectOption[] => {
+    const now = yearOf(isoToEpoch(todayISO()))
+    const shown = yearOf(firstMonth())
+    const lo = Number.isFinite(minE()) ? yearOf(minE()) : undefined
+    const hi = Number.isFinite(maxE()) ? yearOf(maxE()) : undefined
+    const from = Math.min(o.years?.from ?? lo ?? now - 100, shown)
+    const to = Math.max(o.years?.to ?? hi ?? now + 50, shown)
+    const num = new Intl.NumberFormat(loc(), {
+      numberingSystem: o.numberingSystem,
+      useGrouping: false,
+    })
+    const options: SelectOption[] = []
+    for (let y = from; y <= to; y++) {
+      options.push({
+        value: y,
+        label: num.format(y),
+        disabled: (lo != null && y < lo) || (hi != null && y > hi),
+      })
+    }
+    return options
+  }
+
+  /** Shows the given year (calendar numbering), keeping the current month and day where possible. */
+  const goToYear = (year: number) => {
+    const c = cal()
+    const cur = firstMonth()
+    const p = getParts(c, cur)
+    if (p.year === year) return
+    let target = Number.isFinite(p.month) ? fromParts(c, year, p.month, 1) : null
+    // Month names only (Hebrew) or a month missing that year: step by 12 months.
+    target ??= addMonths(c, cur, (year - p.year) * 12)
+    jumpTo(target)
+  }
+
+  /** Shows the `index`-th month (0-based) of the year currently in view. */
+  const goToMonthIndex = (index: number) => {
+    const start = yearMonths()[index]
+    if (start != null) jumpTo(start)
   }
 
   const canGoBack = () => firstMonth() - 1 >= minE()
@@ -639,6 +711,10 @@ export function createDatePicker<M extends SelectionMode = 'single'>(
     clear,
     focus,
     goToMonth,
+    goToYear,
+    goToMonthIndex,
+    getMonthOptions,
+    getYearOptions,
     nextMonth: () => goToMonth(1),
     prevMonth: () => goToMonth(-1),
     setOpen: (open: boolean) => setOpen(open, { restoreFocus: !open }),
@@ -722,6 +798,20 @@ export function createDatePicker<M extends SelectionMode = 'single'>(
         onClick: () => !disabled && goToMonth(1),
       }
     },
+
+    /** For a native `<select>` of the months in the visible year. Render `getMonthOptions()` inside. */
+    getMonthSelectProps: (): Props => ({
+      'aria-label': labels().monthSelect,
+      value: String(yearMonths().indexOf(firstMonth())),
+      onChange: (event: Event) => goToMonthIndex(+(event.currentTarget as HTMLSelectElement).value),
+    }),
+
+    /** For a native `<select>` of years. Render `getYearOptions()` inside. */
+    getYearSelectProps: (): Props => ({
+      'aria-label': labels().yearSelect,
+      value: String(yearOf(firstMonth())),
+      onChange: (event: Event) => goToYear(+(event.currentTarget as HTMLSelectElement).value),
+    }),
 
     getClearButtonProps: (): Props => ({
       type: 'button',

@@ -11,7 +11,7 @@ npm i dayfold
 - **Every calendar, no tables** — Hijri, Persian, Hebrew, Buddhist… computed from the browser's built-in `Intl` data, so they add no weight. Show a second calendar under each day.
 - **Every string is yours** — override any `aria-label` or announcement per instance. Arabic ships built in.
 - **Forms & SEO** — hidden inputs for native forms, `<time datetime>` props, SSR-safe ids, fixed 6-week grid (no layout shift).
-- **Tiny & typed** — ~6.7 kB min+gzip for the full picker (single / range / multiple, popup, text input), strict TypeScript. Accepts `Date`, ISO strings and `Temporal.PlainDate`.
+- **Tiny & typed** — ~7.2 kB min+gzip for the full picker (single / range / multiple, month & year dropdowns, popup, text input), strict TypeScript. Accepts `Date`, ISO strings and `Temporal.PlainDate`.
 
 ## Quick start (React)
 
@@ -110,6 +110,21 @@ dp.subscribe(render)
 render()
 ```
 
+## Month & year dropdowns
+
+Jump to any month or year directly instead of paging one month at a time:
+
+```tsx
+<select {...dp.getMonthSelectProps()}>
+  {dp.monthOptions.map((m) => <option key={m.value} value={m.value} disabled={m.disabled}>{m.label}</option>)}
+</select>
+<select {...dp.getYearSelectProps()}>
+  {dp.yearOptions.map((y) => <option key={y.value} value={y.value} disabled={y.disabled}>{y.label}</option>)}
+</select>
+```
+
+Options are localised and calendar-aware (Hijri years like 1448, 13 months in a Hebrew leap year). The year range follows `min` / `max`, or `years: { from, to }`, defaulting to 100 years back and 50 ahead. Programmatic: `goToYear(year)`, `goToMonthIndex(i)`.
+
 ## Popup with a text input
 
 ```tsx
@@ -137,7 +152,7 @@ useDatePicker({
 
 | Label | Used for |
 | --- | --- |
-| `dialog`, `prevMonth`, `nextMonth`, `clear` | Accessible names |
+| `dialog`, `prevMonth`, `nextMonth`, `clear`, `monthSelect`, `yearSelect` | Accessible names |
 | `today`, `selected`, `unavailable`, `rangeStart`, `rangeEnd` | Words inside day labels |
 | `trigger(valueText)` | Trigger button name |
 | `day(day, labels)` | Full day label |
@@ -156,7 +171,7 @@ useDatePicker({
 
 ## Options
 
-`mode`, `value` / `defaultValue` / `onValueChange`, `locale`, `calendar`, `secondaryCalendar`, `numberingSystem`, `dir`, `weekStartsOn`, `min`, `max`, `isDateDisabled`, `allowDisabledInRange`, `maxSelections`, `numberOfMonths`, `fixedWeeks`, `defaultFocusedDate`, `today`, `open` / `defaultOpen` / `onOpenChange`, `closeOnSelect`, `closeOnOutsideClick`, `modal`, `labels`, `announce`, `inputFormat`, `parse`, `placeholder`, `name`, `id`, `focusDay`.
+`mode`, `value` / `defaultValue` / `onValueChange`, `locale`, `calendar`, `secondaryCalendar`, `numberingSystem`, `dir`, `weekStartsOn`, `min`, `max`, `isDateDisabled`, `allowDisabledInRange`, `maxSelections`, `numberOfMonths`, `years`, `fixedWeeks`, `defaultFocusedDate`, `today`, `open` / `defaultOpen` / `onOpenChange`, `closeOnSelect`, `closeOnOutsideClick`, `modal`, `labels`, `announce`, `inputFormat`, `parse`, `placeholder`, `name`, `id`, `focusDay`.
 
 Values are always ISO date strings: `string | null` (single), `string[]` (multiple), `{ start, end } | null` (range).
 
@@ -166,9 +181,9 @@ Full documentation and live demos: **https://dayfold.vercel.app**
 
 | Import | Size (min+gzip) |
 | --- | --- |
-| `dayfold` | 6.7 kB |
-| `dayfold/react` | 6.9 kB (includes core) |
-| `dayfold/vue` | 7.1 kB (includes core) |
+| `dayfold` | 7.2 kB |
+| `dayfold/react` | 7.4 kB (includes core) |
+| `dayfold/vue` | 7.7 kB (includes core) |
 | `dayfold/dom` | 0.3 kB |
 | `dayfold/shortcuts` | 1.8 kB |
 | `dayfold/locales/ar` | < 0.5 kB |

@@ -10,6 +10,10 @@ export interface Labels {
   prevMonth: string
   nextMonth: string
   clear: string
+  /** Accessible name of the month dropdown. */
+  monthSelect: string
+  /** Accessible name of the year dropdown. */
+  yearSelect: string
   today: string
   selected: string
   unavailable: string
@@ -30,6 +34,8 @@ export const defaultLabels: Labels = {
   prevMonth: 'Previous month',
   nextMonth: 'Next month',
   clear: 'Clear',
+  monthSelect: 'Month',
+  yearSelect: 'Year',
   today: 'Today',
   selected: 'selected',
   unavailable: 'unavailable',

@@ -28,6 +28,8 @@ export function useDatePicker<M extends SelectionMode = 'single'>(
     valueText: picker.getValueText(),
     months: picker.getMonths(),
     weekdays: picker.getWeekdays(),
+    monthOptions: picker.getMonthOptions(),
+    yearOptions: picker.getYearOptions(),
     /** React expects `onChange` for controlled inputs. */
     getInputProps: (): Props => {
       const { onInput, ...props } = picker.getInputProps()

@@ -8,6 +8,8 @@ export const ar: Labels = {
   prevMonth: 'الشهر السابق',
   nextMonth: 'الشهر التالي',
   clear: 'مسح',
+  monthSelect: 'الشهر',
+  yearSelect: 'السنة',
   today: 'اليوم',
   selected: 'محدد',
   unavailable: 'غير متاح',
