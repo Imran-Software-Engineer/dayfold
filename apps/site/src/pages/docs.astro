@@ -18,6 +18,8 @@ const toc = [
   ['a11y', 'Accessibility & labels'],
   ['calendars', 'Calendars & locales'],
   ['popover', 'Popup & text input'],
+  ['linked', 'Linked start & end fields'],
+  ['date-field', 'Ready-made DateField'],
   ['forms-seo', 'Forms, SSR & SEO'],
   ['recipes', 'Recipes'],
 ]
@@ -377,6 +379,59 @@ useDatePicker({ locale: 'fa-IR', calendar: 'persian' })`} />
   </div>
 )}`} />
       <p>The input parses the locale's numeric order (<code>29/09/2026</code> in en-GB, <code>09/29/2026</code> in en-US), ISO dates, and Arabic-Indic digits. Add typed shortcuts with <code>parse: withShortcuts()</code> from <code>dayfold/shortcuts</code>.</p>
+
+      <h2 id="linked">Linked start &amp; end fields</h2>
+      <p>Every option is re-read on each render, so one field's value can drive another field's <code>disabled</code>, <code>min</code> or <code>max</code> at runtime:</p>
+      <Code lang="tsx" themes={themes} code={`const [start, setStart] = useState(null)
+const [end, setEnd] = useState(null)
+
+const startPicker = useDatePicker({
+  value: start,
+  onValueChange: setStart,
+  disabled: end ? { after: end } : undefined,   // can't start after the end
+})
+const endPicker = useDatePicker({
+  value: end,
+  onValueChange: setEnd,
+  disabled: start ? { before: start } : undefined, // can't end before the start
+})`} />
+      <ul>
+        <li>When a picker opens with no value, it focuses the <strong>nearest selectable day</strong> — so the end picker opens on the start date, not on a disabled "today".</li>
+        <li>If a value becomes disabled because the other field changed, its input gets <code>aria-invalid="true"</code> and <code>hasInvalidValue()</code> returns <code>true</code>. Clear it or show a message — your call.</li>
+        <li>Prefer <code>min</code> / <code>max</code> instead of <code>disabled</code> if the other side should also be hidden from navigation and the month / year dropdowns.</li>
+        <li>Vue: pass a getter, <code>{'useDatePicker(() => ({ disabled: start.value ? { before: start.value } : undefined }))'}</code>. Vanilla: call <code>picker.update(newOptions)</code>.</li>
+      </ul>
+
+      <h2 id="date-field">Ready-made DateField</h2>
+      <p>If you don't need full control of the markup, <code>dayfold/react/field</code> ships an accessible field built on the same hook — label, input, trigger, popup with month / year dropdowns. It accepts every picker option plus:</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th scope="col">Prop</th><th scope="col">Type</th><th scope="col">Default</th></tr></thead>
+          <tbody>
+            <tr><td><code>label</code></td><td>ReactNode (required)</td><td>—</td></tr>
+            <tr><td><code>hideLabel</code></td><td>visually hide, keep for screen readers</td><td><code>false</code></td></tr>
+            <tr><td><code>icon</code></td><td>any ReactNode, or <code>false</code> for no trigger</td><td>calendar icon</td></tr>
+            <tr><td><code>iconPosition</code></td><td><code>'start' | 'end'</code> (mirrors in RTL)</td><td><code>'end'</code></td></tr>
+            <tr><td><code>description</code> / <code>error</code></td><td>ReactNode, linked via <code>aria-describedby</code>; <code>error</code> sets <code>aria-invalid</code></td><td>—</td></tr>
+            <tr><td><code>dropdowns</code></td><td>month / year selects in the popup</td><td><code>true</code></td></tr>
+            <tr><td><code>prevIcon</code> / <code>nextIcon</code></td><td>ReactNode</td><td>chevrons</td></tr>
+            <tr><td><code>renderDay</code></td><td><code>(day) =&gt; ReactNode</code></td><td>day number</td></tr>
+            <tr><td><code>inputProps</code></td><td>extra input attributes (<code>required</code>, <code>autoFocus</code>…)</td><td>—</td></tr>
+            <tr><td><code>className</code> / <code>classNames</code></td><td>per part: root, label, control, input, trigger, popover, header, select, nav, navButton, grid, weekday, cell, day…</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <Code lang="tsx" themes={themes} code={`import { DateField } from 'dayfold/react/field'
+import 'dayfold/field.css' // optional — or style the dayfold-* classes yourself
+
+<DateField
+  label="Start date"
+  icon={<CalendarIcon />}  // any element, or false
+  iconPosition="start"     // 'start' | 'end'
+  description="DD/MM/YYYY"
+  name="start_date"        // posts an ISO value with the form
+/>`} />
+      <p>The optional stylesheet (~1.5 kB gzip) is themed entirely with custom properties — <code>--dayfold-accent</code>, <code>--dayfold-bg</code>, <code>--dayfold-fg</code>, <code>--dayfold-muted</code>, <code>--dayfold-border</code>, <code>--dayfold-radius</code>, <code>--dayfold-day-size</code> — and follows light / dark automatically.</p>
 
       <h2 id="forms-seo">Forms, SSR & SEO</h2>
       <ul>

@@ -11,7 +11,7 @@ npm i dayfold
 - **Every calendar, no tables** — Hijri, Persian, Hebrew, Buddhist… computed from the browser's built-in `Intl` data, so they add no weight. Show a second calendar under each day.
 - **Every string is yours** — override any `aria-label` or announcement per instance. Arabic ships built in.
 - **Forms & SEO** — hidden inputs for native forms, `<time datetime>` props, SSR-safe ids, fixed 6-week grid (no layout shift).
-- **Tiny & typed** — ~7.4 kB min+gzip for the full picker (single / range / multiple, month & year dropdowns, popup, text input), strict TypeScript. Accepts `Date`, ISO strings and `Temporal.PlainDate`.
+- **Tiny & typed** — ~7.5 kB min+gzip for the full picker (single / range / multiple, month & year dropdowns, popup, text input), strict TypeScript. Accepts `Date`, ISO strings and `Temporal.PlainDate`.
 
 ## Quick start (React)
 
@@ -129,6 +129,41 @@ useDatePicker({
 
 Disabled dates stay focusable and are announced as "unavailable", so keyboard and screen-reader users can still explore; ranges can't span them (unless `allowDisabledInRange`). Use `min` / `max` when you also want to stop navigation beyond a date.
 
+## Linked start & end fields
+
+Options are re-read on every render, so one picker's value can restrict another at runtime:
+
+```tsx
+const [start, setStart] = useState(null)
+const [end, setEnd] = useState(null)
+
+const startPicker = useDatePicker({ value: start, onValueChange: setStart, disabled: end ? { after: end } : undefined })
+const endPicker = useDatePicker({ value: end, onValueChange: setEnd, disabled: start ? { before: start } : undefined })
+```
+
+A picker opening without a value focuses the nearest selectable day (the end picker opens on the start date). If a value becomes disabled because the other field changed, the input gets `aria-invalid="true"` and `hasInvalidValue()` returns `true`.
+
+## Ready-made `DateField` (optional)
+
+Don't need full control of the markup? `dayfold/react/field` is an accessible field on top of the same hook, with a changeable icon placed at the start or end:
+
+```tsx
+import { DateField } from 'dayfold/react/field'
+import 'dayfold/field.css' // optional default look, themed with --dayfold-* custom properties
+
+<DateField
+  label="Start date"
+  icon={<CalendarIcon />}   // any element, or false for no trigger
+  iconPosition="start"      // 'start' | 'end' (mirrors in RTL)
+  description="DD/MM/YYYY"
+  value={start}
+  onValueChange={setStart}
+  disabled={end ? { after: end } : undefined}
+/>
+```
+
+Also: `hideLabel`, `error`, `dropdowns`, `prevIcon` / `nextIcon`, `renderDay`, `inputProps`, `className`, `classNames` (per part), plus every picker option.
+
 ## Month & year dropdowns
 
 Jump to any month or year directly instead of paging one month at a time:
@@ -200,9 +235,10 @@ Full documentation and live demos: **https://dayfold.vercel.app**
 
 | Import | Size (min+gzip) |
 | --- | --- |
-| `dayfold` | 7.4 kB |
-| `dayfold/react` | 7.6 kB (includes core) |
+| `dayfold` | 7.5 kB |
+| `dayfold/react` | 7.7 kB (includes core) |
 | `dayfold/vue` | 7.9 kB (includes core) |
+| `dayfold/react/field` | 8.8 kB (includes core) + optional `dayfold/field.css` 1.5 kB |
 | `dayfold/dom` | 0.3 kB |
 | `dayfold/shortcuts` | 1.8 kB |
 | `dayfold/locales/ar` | < 0.5 kB |

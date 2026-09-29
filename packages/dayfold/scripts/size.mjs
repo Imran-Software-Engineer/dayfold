@@ -6,6 +6,7 @@ const budgets = {
   'dayfold (createDatePicker)': ["import { createDatePicker } from './src/index.ts'", 7.5],
   'dayfold/react': ["import { useDatePicker } from './src/react.ts'", 7.7],
   'dayfold/vue': ["import { useDatePicker } from './src/vue.ts'", 8],
+  'dayfold/react/field': ["import { DateField } from './src/react-field.tsx'", 9.2],
   'dayfold/dom': ["import { spread, h } from './src/dom.ts'", 0.5],
   'dayfold/shortcuts': ["import { withShortcuts } from './src/shortcuts.ts'", 2.5],
 }
@@ -22,7 +23,8 @@ for (const [name, [code, limitKb]] of Object.entries(budgets)) {
     minify: true,
     write: false,
     format: 'esm',
-    external: ['react', 'vue'],
+    external: ['react', 'react/jsx-runtime', 'vue'],
+    jsx: 'automatic',
     legalComments: 'none',
   })
   const buf = out.outputFiles[0].contents

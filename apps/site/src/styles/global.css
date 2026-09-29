@@ -1426,3 +1426,110 @@ kbd {
   border-radius: 8px;
   margin: 0 0 18px;
 }
+
+/* ---------- ready-made field demo ---------- */
+.fd {
+  display: grid;
+  gap: 24px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 24px;
+}
+.fd-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 32px;
+}
+.fd-group {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.fd-group legend {
+  float: inline-start;
+  margin-inline-end: 8px;
+  font: 500 0.72rem var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-2);
+  padding: 0;
+  line-height: 36px;
+}
+:lang(ar) .fd-group legend {
+  font-family: 'IBM Plex Sans Arabic', var(--sans);
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: 0.85rem;
+}
+.fd-radio {
+  position: relative;
+  cursor: pointer;
+}
+.fd-radio input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  margin: 0;
+  cursor: pointer;
+}
+.fd-radio span {
+  display: inline-block;
+  padding: 7px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 0.9rem;
+  min-height: 36px;
+}
+.fd-radio input:checked + span {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+.fd-radio input:focus-visible + span {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.fd-fields {
+  display: grid;
+  gap: 20px;
+}
+@media (min-width: 720px) {
+  .fd-fields {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+/* Theme the packaged field.css with this site's tokens — just custom properties. */
+.fd-field {
+  --dayfold-accent: var(--accent);
+  --dayfold-on-accent: var(--on-accent);
+  --dayfold-accent-soft: var(--accent-soft);
+  --dayfold-bg: var(--paper);
+  --dayfold-fg: var(--ink);
+  --dayfold-muted: var(--ink-2);
+  --dayfold-border: var(--line);
+  --dayfold-focus: var(--focus);
+  --dayfold-radius: 12px;
+}
+.fd-field .dayfold-popover {
+  background: var(--card);
+}
+.fd-text-icon {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.fd-field[data-icon-position] .dayfold-trigger:has(.fd-text-icon) {
+  width: auto;
+  padding-inline: 14px;
+}
+.fd-code {
+  margin-top: 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}

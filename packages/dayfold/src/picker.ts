@@ -205,11 +205,24 @@ export function createDatePicker<M extends SelectionMode = 'single'>(
   const getValueText = () => formatValue({ dateStyle: 'medium' })
 
   // ---------- state ----------
+  /** Nearest selectable day to `e` (within a year either side), else `e` clamped. */
+  const nearestEnabled = (e: number) => {
+    const c = clamp(e)
+    for (let i = 0; i <= 366; i++) {
+      if (!isDisabledE(c + i)) return c + i
+      if (!isDisabledE(c - i)) return c - i
+    }
+    return c
+  }
+
   const initialFocus = () => {
     const v = selectedDates()
     const d = toISODate(o.defaultFocusedDate) ?? v[0] ?? todayISO()
-    return toISO(clamp(isoToEpoch(d)))
+    return toISO(nearestEnabled(isoToEpoch(d)))
   }
+
+  /** The value contains a date that is now disabled (e.g. options changed at runtime). */
+  const hasInvalidValue = () => selectedDates().some((d) => isDisabledE(isoToEpoch(d)))
 
   let state: DatePickerState<M> = {
     value: normalize(o.defaultValue),
@@ -455,10 +468,14 @@ export function createDatePicker<M extends SelectionMode = 'single'>(
     if (open === isOpen()) return
     if (o.open === undefined) state = { ...state, open }
     if (open) {
+      // Open on the selection, otherwise on the nearest selectable day — options such as
+      // `disabled: { before: start }` may have changed since the picker was created.
       const selected = selectedDates()[0]
-      if (selected && !isDisabledE(isoToEpoch(selected))) {
-        state = { ...state, focusedDate: selected, visibleDate: selected }
-      }
+      const target =
+        selected && !isDisabledE(isoToEpoch(selected))
+          ? selected
+          : toISO(nearestEnabled(isoToEpoch(toISODate(o.defaultFocusedDate) ?? state.focusedDate)))
+      state = { ...state, focusedDate: target, visibleDate: target }
       scheduleFocus(state.focusedDate)
       if (hasDOM() && (o.closeOnOutsideClick ?? true)) {
         document.addEventListener('pointerdown', onOutside, true)
@@ -760,6 +777,8 @@ export function createDatePicker<M extends SelectionMode = 'single'>(
     toggle: () => setOpen(!isOpen(), { restoreFocus: isOpen() }),
     isOpen,
     isDateDisabled: (date: ISODate) => isDisabledE(isoToEpoch(date)),
+    /** True when the current value includes a date that is disabled under the current options. */
+    hasInvalidValue,
     /** Resolved writing direction. */
     getDirection: dir,
 
@@ -775,7 +794,7 @@ export function createDatePicker<M extends SelectionMode = 'single'>(
       value: inputText(),
       autoComplete: 'off',
       placeholder: o.placeholder ?? placeholderFor(loc(), cal(), inputFormat()),
-      'aria-invalid': state.inputInvalid ? 'true' : undefined,
+      'aria-invalid': state.inputInvalid || hasInvalidValue() ? 'true' : undefined,
       onInput: (event: Event) =>
         set({ inputText: (event.currentTarget as HTMLInputElement).value, inputInvalid: false }),
       onBlur: commitInput,

@@ -4,6 +4,7 @@ import { type Lang, t } from '../i18n'
 import Base from '../layouts/Base.astro'
 import A11yLab from './A11yLab'
 import CopyButton from './CopyButton'
+import FieldDemo from './FieldDemo'
 import Gallery from './Gallery'
 import Header from './Header.astro'
 import Hero from './Hero'
@@ -14,7 +15,7 @@ const { lang } = Astro.props
 const d = t[lang]
 
 const sizes = [
-  { name: 'dayfold', kb: 7.4, note: lang === 'ar' ? 'المنتقي كاملًا' : 'full picker', us: true },
+  { name: 'dayfold', kb: 7.5, note: lang === 'ar' ? 'المنتقي كاملًا' : 'full picker', us: true },
   { name: 'cally', kb: 9.2 },
   { name: 'air-datepicker', kb: 14.2 },
   { name: 'flatpickr', kb: 14.8 },
@@ -36,6 +37,26 @@ const jsonLd = {
   keywords: 'date picker, headless, accessible, hijri, umm al-qura, react, vue',
   inLanguage: lang,
 }
+const fieldSnippet = `import { DateField } from 'dayfold/react/field'
+import 'dayfold/field.css' // optional default look
+
+const [start, setStart] = useState(null)
+const [end, setEnd] = useState(null)
+
+<DateField
+  label="Start date"
+  value={start}
+  onValueChange={setStart}
+  disabled={end ? { after: end } : undefined}
+  icon={<MyCalendarIcon />}   // any element, or false
+  iconPosition="start"        // 'start' | 'end'
+/>
+<DateField
+  label="End date"
+  value={end}
+  onValueChange={setEnd}
+  disabled={start ? { before: start } : undefined}
+/>`
 const tabs = [
   { id: 'react', label: 'React', lang: 'tsx', code: snippets.react },
   { id: 'vue', label: 'Vue', lang: 'vue', code: snippets.vue },
@@ -70,6 +91,17 @@ const tabs = [
         <p>{d.galleryLead}</p>
       </div>
       <Gallery client:idle lang={lang} />
+    </section>
+
+    <section id="field" class="band" aria-labelledby="field-title">
+      <div class="section-head">
+        <h2 id="field-title">{d.fieldTitle}</h2>
+        <p>{d.fieldLead}</p>
+      </div>
+      <FieldDemo client:idle lang={lang} />
+      <div class="fd-code" dir="ltr">
+        <Code lang="tsx" themes={{ light: 'github-light-high-contrast', dark: 'github-dark-high-contrast' }} code={fieldSnippet} />
+      </div>
     </section>
 
     <section class="band" aria-labelledby="features-title">

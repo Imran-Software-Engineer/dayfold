@@ -1,0 +1,220 @@
+/*
+ * Optional default look for <DateField>. Every value is a custom property, and every
+ * part has a `dayfold-*` class and data attributes, so you can restyle or replace it.
+ */
+.dayfold-field {
+  --dayfold-accent: light-dark(#1d4ed8, #7aa2ff);
+  --dayfold-on-accent: light-dark(#ffffff, #0b1020);
+  --dayfold-accent-soft: light-dark(#dbe5ff, #1e2a4d);
+  --dayfold-bg: light-dark(#ffffff, #17181c);
+  --dayfold-fg: light-dark(#16181d, #eceef3);
+  --dayfold-muted: light-dark(#5b6170, #a3a9b8);
+  --dayfold-border: light-dark(#c9ced8, #3a3e48);
+  --dayfold-danger: light-dark(#b42318, #ff8a80);
+  --dayfold-focus: light-dark(#1d4ed8, #9bb8ff);
+  --dayfold-radius: 10px;
+  --dayfold-day-size: 40px;
+  position: relative;
+  display: grid;
+  gap: 6px;
+  color: var(--dayfold-fg);
+  font: inherit;
+  max-width: 100%;
+}
+.dayfold-label {
+  font-weight: 600;
+  font-size: 0.92em;
+}
+.dayfold-control {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--dayfold-border);
+  border-radius: var(--dayfold-radius);
+  background: var(--dayfold-bg);
+  overflow: hidden;
+  min-height: 44px;
+}
+.dayfold-control:focus-within {
+  outline: 2px solid var(--dayfold-focus);
+  outline-offset: 1px;
+}
+.dayfold-field[data-invalid] .dayfold-control {
+  border-color: var(--dayfold-danger);
+}
+.dayfold-input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  padding: 10px 12px;
+  outline: none;
+}
+.dayfold-input::placeholder {
+  color: var(--dayfold-muted);
+}
+.dayfold-trigger {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  border: 0;
+  background: transparent;
+  color: var(--dayfold-muted);
+  cursor: pointer;
+}
+.dayfold-trigger:hover,
+.dayfold-trigger[aria-expanded="true"] {
+  color: var(--dayfold-accent);
+  background: var(--dayfold-accent-soft);
+}
+.dayfold-trigger:focus-visible {
+  outline: 2px solid var(--dayfold-focus);
+  outline-offset: -3px;
+}
+.dayfold-field[data-icon-position="start"] .dayfold-trigger {
+  border-inline-end: 1px solid var(--dayfold-border);
+}
+.dayfold-field[data-icon-position="end"] .dayfold-trigger {
+  border-inline-start: 1px solid var(--dayfold-border);
+}
+.dayfold-description {
+  margin: 0;
+  font-size: 0.85em;
+  color: var(--dayfold-muted);
+}
+.dayfold-error {
+  margin: 0;
+  font-size: 0.85em;
+  color: var(--dayfold-danger);
+}
+
+.dayfold-popover {
+  position: absolute;
+  z-index: 50;
+  top: calc(100% + 6px);
+  inset-inline-start: 0;
+  width: max-content;
+  max-width: min(calc(100vw - 24px), 640px);
+  padding: 12px;
+  border: 1px solid var(--dayfold-border);
+  border-radius: calc(var(--dayfold-radius) + 4px);
+  background: var(--dayfold-bg);
+  box-shadow: 0 12px 32px -12px rgb(0 0 0 / 0.35);
+}
+.dayfold-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.dayfold-selects {
+  display: flex;
+  gap: 4px;
+  min-width: 0;
+}
+.dayfold-select {
+  min-width: 0;
+  min-height: 36px;
+  padding: 4px 8px;
+  border: 1px solid var(--dayfold-border);
+  border-radius: 8px;
+  background: var(--dayfold-bg);
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+}
+.dayfold-title {
+  font-weight: 600;
+}
+.dayfold-nav {
+  display: flex;
+  gap: 4px;
+}
+.dayfold-nav-button {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--dayfold-border);
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.dayfold-nav-button[aria-disabled="true"] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+[dir="rtl"] .dayfold-chevron {
+  transform: scaleX(-1);
+}
+.dayfold-months {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.dayfold-grid {
+  border-collapse: collapse;
+}
+.dayfold-weekday {
+  width: var(--dayfold-day-size);
+  padding: 4px 0;
+  font-size: 0.78em;
+  font-weight: 500;
+  color: var(--dayfold-muted);
+  text-align: center;
+}
+.dayfold-cell {
+  padding: 1px 0;
+  text-align: center;
+}
+.dayfold-day {
+  width: var(--dayfold-day-size);
+  height: var(--dayfold-day-size);
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+.dayfold-day:hover:not([data-disabled]) {
+  background: var(--dayfold-accent-soft);
+}
+.dayfold-day:focus-visible {
+  outline: 2px solid var(--dayfold-focus);
+  outline-offset: 1px;
+}
+.dayfold-day[data-outside] {
+  color: var(--dayfold-muted);
+}
+.dayfold-day[data-today] {
+  font-weight: 700;
+  box-shadow: inset 0 0 0 1px var(--dayfold-accent);
+}
+.dayfold-day[data-disabled] {
+  color: var(--dayfold-muted);
+  text-decoration: line-through;
+  cursor: not-allowed;
+}
+.dayfold-day[data-in-range],
+.dayfold-day[data-preview] {
+  background: var(--dayfold-accent-soft);
+  border-radius: 0;
+}
+.dayfold-day[data-selected] {
+  background: var(--dayfold-accent);
+  color: var(--dayfold-on-accent);
+  border-radius: 8px;
+}
+@media (forced-colors: active) {
+  .dayfold-day[data-selected] {
+    forced-color-adjust: none;
+    background: Highlight;
+    color: HighlightText;
+  }
+}

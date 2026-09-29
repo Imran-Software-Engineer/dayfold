@@ -5,7 +5,14 @@ export const t = {
     title: 'dayfold — the headless, accessible, tiny date picker',
     description:
       'A 7 kB headless date picker for React, Vue and vanilla JS. WCAG 2.2 keyboard and screen-reader support, Hijri (Umm al-Qura), Persian and every Intl calendar built in. Zero dependencies.',
-    nav: { docs: 'Docs', gallery: 'Gallery', a11y: 'Accessibility', size: 'Size', lang: 'العربية' },
+    nav: {
+      docs: 'Docs',
+      gallery: 'Gallery',
+      field: 'Field',
+      a11y: 'Accessibility',
+      size: 'Size',
+      lang: 'العربية',
+    },
     eyebrow: 'Headless date picker · v0.1',
     heroTitle: ['The date picker that', 'folds into', 'your design.'],
     heroLead:
@@ -42,6 +49,28 @@ export const t = {
         'Arabic, RTL, Umm al-Qura with Gregorian beneath, text input + popup.',
       ],
       stay: ['Stay', 'Two months, range selection, nights counted, weekends priced.'],
+    },
+    fieldTitle: 'Ready-made field, still yours',
+    fieldLead:
+      'Optional <DateField> from dayfold/react/field. The icon can be any element, at the start or end of the input — or left out. These two fields are linked at runtime: picking a start date disables everything before it in the end field, and vice versa.',
+    field: {
+      position: 'Icon position',
+      start: 'Start',
+      end: 'End',
+      icon: 'Icon',
+      icons: {
+        calendar: 'Calendar',
+        range: 'Custom SVG',
+        emoji: 'Emoji',
+        text: 'Text',
+        none: 'None',
+      },
+      pick: 'Pick',
+      startLabel: 'Start date',
+      endLabel: 'End date',
+      startHint: 'Dates after the end date are disabled.',
+      endHint: 'Dates before the start date are disabled.',
+      endHintEmpty: 'Choose a start date first to limit this one.',
     },
     featuresTitle: 'Why dayfold',
     features: [
@@ -105,6 +134,7 @@ export const t = {
     nav: {
       docs: 'التوثيق',
       gallery: 'المعرض',
+      field: 'الحقل',
       a11y: 'سهولة الوصول',
       size: 'الحجم',
       lang: 'English',
@@ -140,6 +170,28 @@ export const t = {
         'عربي، من اليمين لليسار، أم القرى مع الميلادي أسفله، حقل نصي ونافذة منبثقة.',
       ],
       stay: ['الإقامة', 'شهران، اختيار نطاق، حساب الليالي، وتسعير عطلة نهاية الأسبوع.'],
+    },
+    fieldTitle: 'حقل جاهز، وما زال لك',
+    fieldLead:
+      'مكوّن ‎<DateField>‎ اختياري من dayfold/react/field. يمكن أن تكون الأيقونة أي عنصر، في بداية الحقل أو نهايته — أو بدونها. الحقلان مرتبطان أثناء التشغيل: اختيار تاريخ البداية يعطّل ما قبله في حقل النهاية، والعكس.',
+    field: {
+      position: 'موضع الأيقونة',
+      start: 'البداية',
+      end: 'النهاية',
+      icon: 'الأيقونة',
+      icons: {
+        calendar: 'تقويم',
+        range: 'SVG مخصص',
+        emoji: 'رمز تعبيري',
+        text: 'نص',
+        none: 'بدون',
+      },
+      pick: 'اختر',
+      startLabel: 'تاريخ البداية',
+      endLabel: 'تاريخ النهاية',
+      startHint: 'التواريخ بعد تاريخ النهاية معطّلة.',
+      endHint: 'التواريخ قبل تاريخ البداية معطّلة.',
+      endHintEmpty: 'اختر تاريخ البداية أولًا لتقييد هذا الحقل.',
     },
     featuresTitle: 'لماذا dayfold',
     features: [
