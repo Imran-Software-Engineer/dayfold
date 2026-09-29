@@ -33,6 +33,7 @@ const options: [string, string, string][] = [
   ['dir', `'ltr' | 'rtl'`, 'from locale'],
   ['weekStartsOn', '0 (Sun) … 6 (Sat)', 'from locale'],
   ['min / max', 'date', '—'],
+  ['disabled', 'date | { before } | { after } | { from, to } | { dayOfWeek } | fn — or a list', '—'],
   ['isDateDisabled', '(iso) => boolean', '—'],
   ['allowDisabledInRange', 'boolean', 'false'],
   ['maxSelections', 'number (multiple mode)', '—'],
@@ -386,13 +387,34 @@ useDatePicker({ locale: 'fa-IR', calendar: 'persian' })`} />
       </ul>
 
       <h2 id="recipes">Recipes</h2>
-      <h3>Disable weekends and past dates</h3>
-      <Code lang="ts" themes={themes} code={`import { today, toDate } from 'dayfold'
+      <h3 id="disabling">Disable past, future or specific dates</h3>
+      <Code lang="ts" themes={themes} code={`import { today } from 'dayfold'
 
 useDatePicker({
-  min: today(),
-  isDateDisabled: (iso) => [5, 6].includes(toDate(iso).getDay()), // Fri + Sat
+  disabled: [
+    { before: today() },                      // every past date
+    { after: '2027-06-30' },                  // everything after a date
+    { from: '2026-12-24', to: '2026-12-26' }, // an inclusive range
+    '2026-11-11',                             // one date (string, Date or Temporal)
+    { dayOfWeek: [5, 6] },                    // Fridays and Saturdays
+    (iso) => holidays.has(iso),               // any custom rule
+  ],
 })`} />
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th scope="col">Matcher</th><th scope="col">Disables</th></tr></thead>
+          <tbody>
+            <tr><td><code>'2026-11-11'</code>, <code>Date</code>, <code>Temporal.PlainDate</code></td><td>That one day</td></tr>
+            <tr><td><code>{'{ before: d }'}</code></td><td>Every day before <code>d</code></td></tr>
+            <tr><td><code>{'{ after: d }'}</code></td><td>Every day after <code>d</code></td></tr>
+            <tr><td><code>{'{ before: a, after: b }'}</code></td><td>Everything outside <code>a</code>…<code>b</code></td></tr>
+            <tr><td><code>{'{ from: a, to: b }'}</code></td><td><code>a</code> to <code>b</code> inclusive (either end may be omitted)</td></tr>
+            <tr><td><code>{'{ dayOfWeek: [0, 6] }'}</code></td><td>Those weekdays (0 = Sunday)</td></tr>
+            <tr><td><code>(iso) =&gt; boolean</code></td><td>Whatever the function says</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Disabled dates stay focusable and are announced as unavailable, and ranges cannot span them. <code>min</code> / <code>max</code> additionally stop navigation and trim the month and year dropdowns.</p>
       <h3>Controlled range with Temporal</h3>
       <Code lang="tsx" themes={themes} code={`const [range, setRange] = useState(null)
 const dp = useDatePicker({ mode: 'range', numberOfMonths: 2, value: range, onValueChange: setRange })

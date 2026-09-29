@@ -398,25 +398,36 @@ main {
 }
 .df-months {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 24px;
+}
+.df-month,
+.df-head {
+  min-width: 0;
 }
 .df-head {
   min-height: 40px;
   padding-inline-end: 96px;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 *:is(.df-jump) + .df-subtitle {
   margin-top: 6px;
 }
 .df-jump {
+  /* month, year and the arrows always share one row */
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  align-items: center;
   gap: 6px;
+  min-width: 0;
 }
 .df-select {
   appearance: none;
+  flex: 0 1 auto;
+  min-width: 0;
+  text-overflow: ellipsis;
   min-height: 40px;
-  padding: 6px 30px 6px 12px;
+  padding: 6px 28px 6px 10px;
   border: 1px solid var(--line);
   border-radius: 10px;
   background:
@@ -430,7 +441,7 @@ main {
   max-width: 100%;
 }
 [dir='rtl'] .df-select {
-  padding: 6px 12px 6px 30px;
+  padding: 6px 10px 6px 28px;
   background-position:
     left 10px center,
     0 0;
@@ -443,14 +454,14 @@ main {
   color: var(--ink);
 }
 .hc-select {
-  font: 600 1.15rem var(--serif);
+  font: 600 1.1rem var(--serif);
 }
 :lang(ar) .hc-select,
 .hij-select {
   font-family: 'IBM Plex Sans Arabic', var(--sans);
 }
 .alm-select {
-  font: italic 600 1.25rem var(--serif);
+  font: italic 600 1.1rem var(--serif);
   border-color: #d9cfbc;
   color: #1c1914;
 }
@@ -464,6 +475,49 @@ main {
 .st-select,
 .lb-select {
   font-size: 0.95rem;
+}
+/* Narrow calendars: compact arrows and dropdowns so nothing truncates. */
+.df-cal {
+  container-type: inline-size;
+}
+@container (max-width: 340px) {
+  .df-head {
+    padding-inline-end: 76px;
+  }
+  .df-navbtn {
+    width: 34px;
+    height: 34px;
+  }
+  .df-jump {
+    gap: 4px;
+  }
+  .df-select,
+  .hc-select,
+  .alm-select {
+    font-size: 0.98rem;
+    min-height: 34px;
+    padding: 4px 22px 4px 8px;
+    background-position:
+      right 6px center,
+      0 0;
+    background-size: 10px, auto;
+  }
+  [dir='rtl'] .df-select {
+    padding: 4px 8px 4px 22px;
+    background-position:
+      left 6px center,
+      0 0;
+  }
+}
+@container (max-width: 280px) {
+  .df-nav {
+    position: static;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .df-head {
+    padding-inline-end: 0;
+  }
 }
 table.df-grid {
   width: 100%;

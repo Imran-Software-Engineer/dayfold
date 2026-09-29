@@ -58,6 +58,75 @@ describe('calendar data', () => {
   })
 })
 
+describe('disabled dates', () => {
+  const off = (opts: Record<string, unknown>) => {
+    const dp = createDatePicker({ ...base, ...opts })
+    return (iso: string) => dp.isDateDisabled(iso)
+  }
+
+  it('disables past or future dates', () => {
+    const past = off({ disabled: { before: TODAY } })
+    expect([past('2026-09-28'), past(TODAY), past('2026-12-01')]).toEqual([true, false, false])
+    const future = off({ disabled: { after: TODAY } })
+    expect([future('2026-09-28'), future(TODAY), future('2026-09-30')]).toEqual([
+      false,
+      false,
+      true,
+    ])
+  })
+
+  it('disables specific dates, ranges, weekdays and outside a window', () => {
+    const d = off({
+      disabled: [
+        '2026-12-25',
+        new Date(2026, 11, 31),
+        { toString: () => '2027-01-01' },
+        { from: '2026-10-01', to: '2026-10-07' },
+        { dayOfWeek: [5] },
+        (iso: string) => iso === '2026-11-11',
+      ],
+    })
+    expect(['2026-12-25', '2026-12-31', '2027-01-01', '2026-10-01', '2026-10-07'].map(d)).toEqual([
+      true,
+      true,
+      true,
+      true,
+      true,
+    ])
+    expect(d('2026-10-08')).toBe(false)
+    expect(d('2026-10-09')).toBe(true) // a Friday
+    expect(d('2026-11-11')).toBe(true)
+    const window = off({ disabled: { before: '2026-09-01', after: '2026-09-30' } })
+    expect([window('2026-08-31'), window('2026-09-15'), window('2026-10-01')]).toEqual([
+      true,
+      false,
+      true,
+    ])
+    const open = off({ disabled: { from: '2026-10-01' } })
+    expect([open('2026-09-30'), open('2030-01-01')]).toEqual([false, true])
+  })
+
+  it('keeps disabled dates focusable but not selectable, and blocks ranges across them', () => {
+    const dp = createDatePicker({
+      ...base,
+      mode: 'range',
+      disabled: { from: '2026-09-15', to: '2026-09-16' },
+    })
+    const day = dp
+      .getMonths()[0]
+      .weeks.flat()
+      .find((x) => x.date === '2026-09-15')!
+    expect(day.isDisabled).toBe(true)
+    expect(dp.getDayProps(day)['aria-disabled']).toBe('true')
+    expect(dp.getDayProps(day)['aria-label']).toContain('unavailable')
+    dp.focus('2026-09-15')
+    expect(dp.getState().focusedDate).toBe('2026-09-15')
+    dp.select('2026-09-10')
+    dp.select('2026-09-20')
+    expect(dp.getValue()).toEqual({ start: '2026-09-20', end: null })
+  })
+})
+
 describe('month and year dropdowns', () => {
   const change = (props: Record<string, any>, value: number) =>
     props.onChange({ currentTarget: { value: String(value) } })

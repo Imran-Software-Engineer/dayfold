@@ -6,6 +6,7 @@ import { parseDate, placeholderFor } from './parse'
 import type {
   CalendarDay,
   CalendarMonth,
+  DateMatcher,
   DatePickerOptions,
   DatePickerState,
   DateRange,
@@ -149,7 +150,45 @@ export function createDatePicker<M extends SelectionMode = 'single'>(
     return [v.start, v.end].filter(Boolean) as ISODate[]
   }
 
-  const isDisabledE = (e: number) => e < minE() || e > maxE() || !!o.isDateDisabled?.(toISO(e))
+  // `disabled` matchers compiled once per option value into epoch-day predicates.
+  let compiledFor: unknown
+  let compiled: Array<(e: number) => boolean> = []
+  const epochOr = (d: unknown, fallback: number) => {
+    const iso = toISODate(d as string)
+    return iso ? isoToEpoch(iso) : fallback
+  }
+  const compile = (m: DateMatcher): ((e: number) => boolean) => {
+    if (typeof m === 'function') return (e) => m(toISO(e))
+    if (m && typeof m === 'object' && !(m instanceof Date)) {
+      const r = m as Record<string, unknown>
+      if (Array.isArray(r.dayOfWeek)) {
+        const days = r.dayOfWeek as number[]
+        return (e) => days.includes(weekday(e))
+      }
+      if ('from' in r || 'to' in r) {
+        const a = epochOr(r.from, Number.NEGATIVE_INFINITY)
+        const b = epochOr(r.to, Number.POSITIVE_INFINITY)
+        return (e) => e >= a && e <= b
+      }
+      if ('before' in r || 'after' in r) {
+        const a = epochOr(r.before, Number.NEGATIVE_INFINITY)
+        const b = epochOr(r.after, Number.POSITIVE_INFINITY)
+        return (e) => e < a || e > b
+      }
+    }
+    const day = epochOr(m, Number.NaN)
+    return (e) => e === day
+  }
+  /** Disabled by `disabled` / `isDateDisabled` (not by min / max). */
+  const blocked = (e: number) => {
+    if (compiledFor !== o.disabled) {
+      compiledFor = o.disabled
+      const list = o.disabled == null ? [] : Array.isArray(o.disabled) ? o.disabled : [o.disabled]
+      compiled = list.map(compile)
+    }
+    return compiled.some((test) => test(e)) || !!o.isDateDisabled?.(toISO(e))
+  }
+  const isDisabledE = (e: number) => e < minE() || e > maxE() || blocked(e)
   const clamp = (e: number) => Math.min(maxE(), Math.max(minE(), e))
 
   const formatValue = (opts: Intl.DateTimeFormatOptions): string | null => {
@@ -352,8 +391,8 @@ export function createDatePicker<M extends SelectionMode = 'single'>(
   }
 
   const rangeHasDisabled = (a: number, b: number) => {
-    if (!o.isDateDisabled || o.allowDisabledInRange) return false
-    for (let e = a; e <= b && e - a < 3700; e++) if (o.isDateDisabled(toISO(e))) return true
+    if ((!o.isDateDisabled && o.disabled == null) || o.allowDisabledInRange) return false
+    for (let e = a; e <= b && e - a < 3700; e++) if (blocked(e)) return true
     return false
   }
 

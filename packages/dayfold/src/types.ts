@@ -23,6 +23,16 @@ export type ValueInput<M extends SelectionMode> = M extends 'range'
     ? DateInput[]
     : DateInput | null
 
+/** Describes dates for the `disabled` option. */
+export type DateMatcher =
+  | DateInput
+  | { before: DateInput }
+  | { after: DateInput }
+  | { before: DateInput; after: DateInput }
+  | { from?: DateInput; to?: DateInput }
+  | { dayOfWeek: number[] }
+  | ((date: ISODate) => boolean)
+
 export interface ValueChangeDetails {
   /** The date that was clicked / typed, or `null` for a clear. */
   date: ISODate | null
@@ -54,7 +64,25 @@ export interface DatePickerOptions<M extends SelectionMode = 'single'> {
 
   min?: DateInput
   max?: DateInput
-  /** Return `true` to make a date unavailable. It stays focusable but cannot be selected. */
+  /**
+   * Dates that cannot be selected (they stay focusable and are announced as unavailable).
+   * One matcher or a list:
+   *
+   * ```ts
+   * disabled: [
+   *   '2026-12-25',                            // a specific date (string, Date or Temporal)
+   *   { before: today() },                     // every past date
+   *   { after: '2027-06-30' },                 // everything after a date
+   *   { from: '2026-10-01', to: '2026-10-07' }, // an inclusive range
+   *   { dayOfWeek: [5, 6] },                   // Fridays and Saturdays
+   *   (iso) => holidays.has(iso),              // anything else
+   * ]
+   * ```
+   *
+   * Unlike `min` / `max`, these do not stop navigation.
+   */
+  disabled?: DateMatcher | DateMatcher[]
+  /** Return `true` to make a date unavailable. Same as a function in `disabled`. */
   isDateDisabled?: (date: ISODate) => boolean
   /** Range mode: allow a range to span disabled dates. Default `false`. */
   allowDisabledInRange?: boolean

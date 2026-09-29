@@ -12,14 +12,14 @@ export function Almanac({ lang }: { lang: Lang }) {
   const dp = useDatePicker({
     locale: loc(lang),
     labels: lang === 'ar' ? ar : undefined,
-    isDateDisabled: (d) => new Date(`${d}T00:00`).getDay() === 5,
+    disabled: { dayOfWeek: [5] },
   })
   return (
     <div className="skin alm" {...dp.getRootProps()}>
       <Calendar dp={dp} prefix="alm" weekday="short" />
       <p className="alm-foot">
-        {dp.valueText ?? '—'}
-        <span> · {lang === 'ar' ? 'مغلق أيام الجمعة' : 'Closed on Fridays'}</span>
+        {dp.valueText && <strong>{dp.valueText} · </strong>}
+        {lang === 'ar' ? 'مغلق أيام الجمعة' : 'Closed on Fridays'}
       </p>
     </div>
   )
