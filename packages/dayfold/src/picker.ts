@@ -23,8 +23,9 @@ const fmtCache = new Map<string, Intl.DateTimeFormat>()
 const flag = (on: boolean | undefined) => (on ? '' : undefined)
 const bool = (on: boolean) => (on ? 'true' : 'false')
 const hasDOM = () => typeof document !== 'undefined'
-const later = (fn: () => void) =>
-  typeof requestAnimationFrame === 'function' ? requestAnimationFrame(fn) : setTimeout(fn, 0)
+// A macrotask runs after React / Vue have committed the update (both flush in microtasks),
+// and unlike requestAnimationFrame it still fires in background tabs.
+const later = (fn: () => void) => setTimeout(fn, 0)
 
 let liveRegion: HTMLElement | undefined
 
@@ -315,8 +316,11 @@ export function createDatePicker<M extends SelectionMode = 'single'>(
       }
     }
     state = { ...state, focusedDate: iso, hoveredDate: null }
+    // Keep focus on the picked day even if the host re-renders its button.
+    const hadFocus = hasDOM() && document.activeElement?.getAttribute('data-dayfold-day') === id
     commit(next as ValueOf<M>, { date: iso, source })
     if (done && (o.closeOnSelect ?? true) && isOpen()) setOpen(false, { restoreFocus: true })
+    else if (hadFocus) scheduleFocus(iso)
   }
 
   const clear = () => {
@@ -496,11 +500,16 @@ export function createDatePicker<M extends SelectionMode = 'single'>(
         labelId: `${id}-month-${i}`,
         weeks,
       }
-      if (o.secondaryCalendar) {
-        month.secondaryLabel = fmt(
-          { month: 'long', year: 'numeric' },
-          o.secondaryCalendar,
-        ).formatRange(start * DAY_MS, end * DAY_MS)
+      const sec = o.secondaryCalendar
+      if (sec) {
+        // Built by hand: formatRange separators differ between ICU builds (SSR hydration).
+        const a = getParts(sec, start)
+        const b = getParts(sec, end)
+        const long = { month: 'long', year: 'numeric' } as const
+        month.secondaryLabel =
+          a.month === b.month && a.year === b.year
+            ? format(month.start, long, sec)
+            : `${format(month.start, a.year === b.year ? { month: 'long' } : long, sec)} – ${format(month.end, long, sec)}`
       }
       months.push(month)
       start = end + 1
@@ -674,7 +683,8 @@ export function createDatePicker<M extends SelectionMode = 'single'>(
         type: 'button',
         'aria-haspopup': 'dialog',
         'aria-expanded': bool(isOpen()),
-        'aria-controls': ids.dialog,
+        // Only reference the dialog while it is rendered.
+        'aria-controls': isOpen() ? ids.dialog : undefined,
         'aria-label': labels().trigger(text),
         'data-state': isOpen() ? 'open' : 'closed',
         onClick: () => setOpen(!isOpen(), { restoreFocus: isOpen() }),

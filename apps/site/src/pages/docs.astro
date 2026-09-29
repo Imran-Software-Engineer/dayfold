@@ -1,0 +1,392 @@
+---
+import { Code } from 'astro:components'
+import Header from '../components/Header.astro'
+import Base from '../layouts/Base.astro'
+
+const themes = { light: 'github-light-high-contrast', dark: 'github-dark-high-contrast' } as const
+
+const toc = [
+  ['install', 'Install'],
+  ['concepts', 'How it works'],
+  ['quick-start', 'Quick start'],
+  ['options', 'Options'],
+  ['api', 'Returned API'],
+  ['prop-getters', 'Prop getters'],
+  ['data', 'Calendar data'],
+  ['styling', 'Styling'],
+  ['keyboard', 'Keyboard'],
+  ['a11y', 'Accessibility & labels'],
+  ['calendars', 'Calendars & locales'],
+  ['popover', 'Popup & text input'],
+  ['forms-seo', 'Forms, SSR & SEO'],
+  ['recipes', 'Recipes'],
+]
+
+const options: [string, string, string][] = [
+  ['mode', `'single' | 'range' | 'multiple'`, `'single'`],
+  ['value / defaultValue', 'ISO string, Date, Temporal (or array / {start, end})', '—'],
+  ['onValueChange', '(value, { date, source }) => void', '—'],
+  ['locale', 'BCP 47 tag', 'runtime locale'],
+  ['calendar', `'gregory' | 'islamic-umalqura' | 'persian' | 'hebrew' | …`, `'gregory'`],
+  ['secondaryCalendar', 'calendar id shown under each day', '—'],
+  ['numberingSystem', `'latn' | 'arab' | …`, 'from locale'],
+  ['dir', `'ltr' | 'rtl'`, 'from locale'],
+  ['weekStartsOn', '0 (Sun) … 6 (Sat)', 'from locale'],
+  ['min / max', 'date', '—'],
+  ['isDateDisabled', '(iso) => boolean', '—'],
+  ['allowDisabledInRange', 'boolean', 'false'],
+  ['maxSelections', 'number (multiple mode)', '—'],
+  ['numberOfMonths', 'number', '1'],
+  ['fixedWeeks', 'always 6 rows (no layout shift)', 'true'],
+  ['defaultFocusedDate', 'date', 'selection, then today'],
+  ['today', 'date (tests / SSR)', 'local today'],
+  ['open / defaultOpen / onOpenChange', 'popup state', 'false'],
+  ['closeOnSelect', 'boolean', 'true'],
+  ['closeOnOutsideClick', 'boolean', 'true'],
+  ['modal', 'trap Tab inside the dialog', 'true'],
+  ['labels', 'Partial<Labels>', 'English'],
+  ['announce', `'auto' | 'manual' | false`, `'auto'`],
+  ['inputFormat', 'Intl.DateTimeFormatOptions', 'numeric y/m/d'],
+  ['parse', '(text, ctx) => iso | null', 'locale-aware parser'],
+  ['placeholder', 'string', 'e.g. mm/dd/yyyy'],
+  ['name', 'form field name for getHiddenInputProps()', '—'],
+  ['id', 'stable id prefix (SSR)', 'auto'],
+  ['focusDay', 'custom focus routine', 'data-attribute lookup'],
+]
+
+const getters: [string, string, string][] = [
+  ['getRootProps()', 'wrapper', 'dir, data-dayfold'],
+  ['getLabelProps()', '<label>', 'id, htmlFor → input'],
+  ['getInputProps()', '<input>', 'value, placeholder, aria-invalid, parsing on blur / Enter, Alt+↓ opens'],
+  ['getTriggerProps()', '<button>', 'aria-haspopup, aria-expanded, aria-controls, dynamic aria-label'],
+  ['getDialogProps()', 'popup', 'role=dialog, aria-modal, aria-label, Esc, focus trap'],
+  ['getPrevButtonProps() / getNextButtonProps()', '<button>', 'aria-label, aria-disabled at min / max'],
+  ['getClearButtonProps()', '<button>', 'aria-label, clears'],
+  ['getMonthLabelProps(month)', 'heading / caption', 'id (labels the grid)'],
+  ['getGridProps(month)', '<table>', 'role=grid, aria-labelledby, aria-multiselectable'],
+  ['getWeekdayProps(weekday)', '<th>', 'role=columnheader, full weekday name'],
+  ['getWeekProps()', '<tr>', 'role=row'],
+  ['getCellProps(day)', '<td>', 'role=gridcell, aria-selected, data-* state'],
+  ['getDayProps(day)', '<button>', 'roving tabIndex, aria-label, aria-current, aria-disabled, keyboard'],
+  ['getLiveRegionProps()', 'element', 'role=status for announce: "manual"'],
+  ['getHiddenInputProps({ name, part })', '<input>', 'type=hidden, ISO value for native forms'],
+  ['getTimeProps(date?)', '<time>', 'dateTime (machine-readable)'],
+]
+
+const keys: [string, string][] = [
+  ['← / →', 'Previous / next day (swapped in RTL)'],
+  ['↑ / ↓', 'Same weekday, previous / next week'],
+  ['Home / End', 'First / last day of the week'],
+  ['Page Up / Page Down', 'Previous / next month'],
+  ['Shift + Page Up / Down', 'Previous / next year'],
+  ['Enter / Space', 'Select the focused day (native button)'],
+  ['Escape', 'Close the popup and return focus to the trigger'],
+  ['Tab / Shift + Tab', 'Cycle inside the popup when modal'],
+  ['Alt + ↓ (in input)', 'Open the popup'],
+  ['Enter (in input)', 'Parse and commit the typed date'],
+]
+
+const labelsRows: [string, string][] = [
+  ['dialog', 'Accessible name of the popup'],
+  ['prevMonth / nextMonth / clear', 'Button names'],
+  ['today / selected / unavailable / rangeStart / rangeEnd', 'Words used inside day labels'],
+  ['trigger(valueText)', 'Trigger button name, e.g. “Change date, Sep 29, 2026”'],
+  ['day(day, labels)', 'Full day label — build your own sentence'],
+  ['monthChanged(label)', 'Announcement after month navigation'],
+  ['selectionChanged(valueText)', 'Announcement after a selection'],
+]
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'TechArticle',
+  headline: 'dayfold documentation',
+  about: 'Headless accessible date picker',
+  inLanguage: 'en',
+}
+---
+
+<Base
+  lang="en"
+  title="Docs — dayfold headless date picker"
+  description="API reference for dayfold: options, prop getters, keyboard support, labels, Hijri and other calendars, forms, SSR and recipes for React, Vue and vanilla JS."
+  path="/docs/"
+  jsonLd={jsonLd}
+>
+  <Header lang="en" path="/docs/" />
+  <main id="main" class="docs">
+    <nav class="docs-toc" aria-label="On this page">
+      <strong>On this page</strong>
+      <ol>{toc.map(([id, label]) => <li><a href={`#${id}`}>{label}</a></li>)}</ol>
+    </nav>
+
+    <article class="prose">
+      <h1>Documentation</h1>
+      <p>
+        dayfold is a <strong>headless</strong> date picker: it renders nothing. You get calendar data,
+        state, actions, and <em>prop getters</em> that attach roles, ARIA attributes, keyboard handling
+        and focus management to markup you write. Style it with anything.
+      </p>
+
+      <h2 id="install">Install</h2>
+      <Code lang="bash" themes={themes} code={`npm i dayfold`} />
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th scope="col">Import</th><th scope="col">Use</th></tr></thead>
+          <tbody>
+            <tr><td><code>dayfold</code></td><td>Framework-free core: <code>createDatePicker()</code> and date utilities</td></tr>
+            <tr><td><code>dayfold/react</code></td><td><code>useDatePicker()</code> hook (React 18+)</td></tr>
+            <tr><td><code>dayfold/vue</code></td><td><code>useDatePicker()</code> composable (Vue 3.5+)</td></tr>
+            <tr><td><code>dayfold/dom</code></td><td><code>spread()</code> and <code>h()</code> for vanilla JS</td></tr>
+            <tr><td><code>dayfold/shortcuts</code></td><td>Optional typed shortcuts (“tomorrow”, “+3d”, “غدا”)</td></tr>
+            <tr><td><code>dayfold/locales/ar</code></td><td>Arabic accessible labels</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="concepts">How it works</h2>
+      <ul>
+        <li><strong>Dates are ISO strings</strong> (<code>"2026-09-29"</code>). No time zones, serialisable, SSR-safe. Inputs accept <code>Date</code>, ISO strings and <code>Temporal.PlainDate</code>.</li>
+        <li><strong>Calendars come from <code>Intl</code></strong>, so Hijri, Persian and others add no bytes and need no conversion tables.</li>
+        <li><strong>Prop getters are framework-neutral objects.</strong> Spread them in React, <code>v-bind</code> them in Vue, or apply them with <code>spread()</code>.</li>
+        <li><strong>State is a tiny store</strong> (<code>getState()</code> + <code>subscribe()</code>) that adapters connect to their reactivity.</li>
+      </ul>
+
+      <h2 id="quick-start">Quick start</h2>
+      <h3>React</h3>
+      <Code lang="tsx" themes={themes} code={`import { useDatePicker } from 'dayfold/react'
+
+export function Calendar() {
+  const dp = useDatePicker({ locale: 'en-US' })
+
+  return (
+    <div {...dp.getRootProps()}>
+      <button {...dp.getPrevButtonProps()}>‹</button>
+      <button {...dp.getNextButtonProps()}>›</button>
+      {dp.months.map((month) => (
+        <table key={month.start} {...dp.getGridProps(month)}>
+          <caption {...dp.getMonthLabelProps(month)}>{month.label}</caption>
+          <thead>
+            <tr>
+              {dp.weekdays.map((w) => (
+                <th key={w.weekday} {...dp.getWeekdayProps(w)}>{w.narrow}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {month.weeks.map((week) => (
+              <tr key={week[0].date} {...dp.getWeekProps()}>
+                {week.map((day) => (
+                  <td key={day.date} {...dp.getCellProps(day)}>
+                    <button {...dp.getDayProps(day)}>{day.label}</button>
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ))}
+      <p>Selected: {dp.valueText ?? 'none'}</p>
+    </div>
+  )
+}`} />
+      <h3>Vue</h3>
+      <Code lang="vue" themes={themes} code={`<script setup>
+import { useDatePicker } from 'dayfold/vue'
+const dp = useDatePicker({ locale: 'ar-SA', calendar: 'islamic-umalqura' })
+</script>
+
+<template>
+  <div v-bind="dp.getRootProps()">
+    <table v-for="month in dp.months.value" :key="month.start" v-bind="dp.getGridProps(month)">
+      <caption v-bind="dp.getMonthLabelProps(month)">{{ month.label }}</caption>
+      <tr v-for="week in month.weeks" :key="week[0].date" v-bind="dp.getWeekProps()">
+        <td v-for="day in week" :key="day.date" v-bind="dp.getCellProps(day)">
+          <button v-bind="dp.getDayProps(day)">{{ day.label }}</button>
+        </td>
+      </tr>
+    </table>
+  </div>
+</template>`} />
+      <p>Options can be a plain object, a <code>ref</code>, or a getter — changes are picked up reactively.</p>
+      <h3>Vanilla JS</h3>
+      <Code lang="js" themes={themes} code={`import { createDatePicker } from 'dayfold'
+import { h } from 'dayfold/dom'
+
+const dp = createDatePicker({ locale: 'fa-IR', calendar: 'persian' })
+const root = document.querySelector('#calendar')
+
+function render() {
+  const [month] = dp.getMonths()
+  root.replaceChildren(
+    h('table', dp.getGridProps(month),
+      h('caption', dp.getMonthLabelProps(month), month.label),
+      ...month.weeks.map((week) =>
+        h('tr', dp.getWeekProps(),
+          ...week.map((day) =>
+            h('td', dp.getCellProps(day), h('button', dp.getDayProps(day), day.label)))))),
+  )
+}
+dp.subscribe(render)
+render()`} />
+      <p>Focus is restored to the right day after each render, so a full re-render like this stays keyboard-friendly.</p>
+
+      <h2 id="options">Options</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th scope="col">Option</th><th scope="col">Type</th><th scope="col">Default</th></tr></thead>
+          <tbody>{options.map(([n, ty, def]) => <tr><td><code>{n}</code></td><td>{ty}</td><td><code>{def}</code></td></tr>)}</tbody>
+        </table>
+      </div>
+      <p>Pass <code>value</code> to control the picker; omit it (or use <code>defaultValue</code>) for uncontrolled use. Values are always returned as ISO strings: a string or <code>null</code> (single), <code>string[]</code> (multiple), or <code>{'{ start, end }'}</code> (range).</p>
+
+      <h2 id="api">Returned API</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th scope="col">Member</th><th scope="col">Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>months</code> / <code>getMonths()</code></td><td>Visible months with weeks and days (see below)</td></tr>
+            <tr><td><code>weekdays</code> / <code>getWeekdays()</code></td><td>Weekday names in display order (narrow, short, long)</td></tr>
+            <tr><td><code>value</code> / <code>getValue()</code></td><td>Effective value (controlled or not)</td></tr>
+            <tr><td><code>valueText</code> / <code>getValueText()</code></td><td>Localised text, e.g. “Sep 29 – Oct 3, 2026”</td></tr>
+            <tr><td><code>state</code> / <code>getState()</code></td><td><code>focusedDate</code>, <code>visibleDate</code>, <code>open</code>, <code>inputText</code>, <code>inputInvalid</code>, <code>announcement</code></td></tr>
+            <tr><td><code>select(iso)</code>, <code>clear()</code></td><td>Change the selection programmatically</td></tr>
+            <tr><td><code>focus(iso, {'{ moveFocus }'})</code></td><td>Move the focused date (and visible month)</td></tr>
+            <tr><td><code>goToMonth(n)</code>, <code>nextMonth()</code>, <code>prevMonth()</code></td><td>Navigate months</td></tr>
+            <tr><td><code>setOpen(bool)</code>, <code>toggle()</code>, <code>isOpen()</code></td><td>Popup control</td></tr>
+            <tr><td><code>isDateDisabled(iso)</code>, <code>getDirection()</code></td><td>Helpers</td></tr>
+            <tr><td><code>subscribe(fn)</code>, <code>update(opts)</code>, <code>destroy()</code></td><td>Core store (vanilla use)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="prop-getters">Prop getters</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th scope="col">Getter</th><th scope="col">Put it on</th><th scope="col">Provides</th></tr></thead>
+          <tbody>{getters.map(([g, el, p]) => <tr><td><code>{g}</code></td><td>{el}</td><td>{p}</td></tr>)}</tbody>
+        </table>
+      </div>
+      <p>Getters return plain objects. To add your own handlers, merge them: <code>{'{ ...dp.getDayProps(day), onClick: (e) => { mine(); dp.getDayProps(day).onClick(e) } }'}</code>.</p>
+
+      <h2 id="data">Calendar data</h2>
+      <p>Each day in <code>month.weeks</code> is a plain object:</p>
+      <Code lang="ts" themes={themes} code={`interface CalendarDay {
+  date: string            // '2026-09-29'
+  day: number             // day of month in the primary calendar
+  label: string           // localised digits, e.g. '٢٩'
+  fullLabel: string       // 'Tuesday, September 29, 2026'
+  secondaryLabel?: string // day in secondaryCalendar
+  secondaryFullLabel?: string
+  weekday: number         // 0 = Sunday
+  isToday, isSelected, isDisabled, isOutside, isFocused, isWeekend: boolean
+  isRangeStart, isRangeEnd, isInRange, isInPreview: boolean
+}`} />
+
+      <h2 id="styling">Styling</h2>
+      <p>Every state is exposed as a data attribute on both the cell and the day button, so you can style with plain CSS, Tailwind variants, or anything else:</p>
+      <Code lang="css" themes={themes} code={`[data-selected] { background: black; color: white; }
+[data-today]    { font-weight: 700; }
+[data-outside]  { opacity: .4; }
+[data-disabled] { text-decoration: line-through; }
+[data-in-range], [data-preview] { background: #eee; }
+[data-range-start] { border-radius: 99px 0 0 99px; }
+[data-range-end]   { border-radius: 0 99px 99px 0; }
+[aria-disabled='true'] { cursor: not-allowed; }`} />
+      <Code lang="html" themes={themes} code={`<!-- Tailwind -->
+<button class="data-[selected]:bg-black data-[selected]:text-white data-[outside]:opacity-40" ...>`} />
+
+      <h2 id="keyboard">Keyboard</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead>
+          <tbody>{keys.map(([k, a]) => <tr><td><kbd>{k}</kbd></td><td>{a}</td></tr>)}</tbody>
+        </table>
+      </div>
+      <p>Navigation is clamped to <code>min</code> / <code>max</code>. Disabled dates stay focusable — so users can discover them — but cannot be selected.</p>
+
+      <h2 id="a11y">Accessibility & labels</h2>
+      <ul>
+        <li>Follows the W3C APG date-picker dialog and grid patterns, with a real <code>&lt;button&gt;</code> in every cell.</li>
+        <li>Roving <code>tabindex</code>: one Tab stop for the whole grid.</li>
+        <li>Month and selection changes are announced through a shared polite live region (<code>announce: 'auto'</code>). Use <code>'manual'</code> to render your own with <code>getLiveRegionProps()</code> and <code>state.announcement</code>.</li>
+        <li>State is never colour-only: it is in the accessible name and in data attributes.</li>
+        <li>Tested with axe-core in CI; the fixed 6-week grid prevents layout shift.</li>
+      </ul>
+      <p>Every accessible string is overridable per instance:</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th scope="col">Label</th><th scope="col">Used for</th></tr></thead>
+          <tbody>{labelsRows.map(([k, v]) => <tr><td><code>{k}</code></td><td>{v}</td></tr>)}</tbody>
+        </table>
+      </div>
+      <Code lang="ts" themes={themes} code={`import { ar } from 'dayfold/locales/ar'
+
+useDatePicker({
+  locale: 'ar-SA',
+  labels: {
+    ...ar,
+    dialog: 'اختر تاريخ الموعد',
+    day: (d, l) => [d.fullLabel, d.isDisabled && 'محجوز'].filter(Boolean).join('، '),
+  },
+})`} />
+      <p class="callout">You still own the rest of the page: give the input a visible label (<code>getLabelProps()</code>), keep your colours at 4.5:1 contrast and your day buttons at least 24×24 px (44 px recommended).</p>
+
+      <h2 id="calendars">Calendars & locales</h2>
+      <p><code>calendar</code> accepts any Unicode calendar id your runtime supports. Month boundaries are derived from <code>Intl.DateTimeFormat</code>, so the Hijri calendar matches the official Umm al-Qura tables shipped in ICU.</p>
+      <Code lang="ts" themes={themes} code={`// Hijri with Gregorian underneath; digits, direction and week start come from the locale
+useDatePicker({ locale: 'ar-SA', calendar: 'islamic-umalqura', secondaryCalendar: 'gregory' })
+
+// Gregorian with Hijri underneath, Latin digits
+useDatePicker({ locale: 'en-SA', secondaryCalendar: 'islamic-umalqura', numberingSystem: 'latn' })
+
+// Persian (Jalali)
+useDatePicker({ locale: 'fa-IR', calendar: 'persian' })`} />
+      <p>Week start, weekend days and writing direction come from <code>Intl.Locale</code>, with a small CLDR fallback for engines that lack <code>weekInfo</code>. Override any of them with <code>weekStartsOn</code> and <code>dir</code>.</p>
+
+      <h2 id="popover">Popup & text input</h2>
+      <p>dayfold manages open state, focus on open, Escape, the focus trap, outside clicks and returning focus. Positioning is yours — the native <code>popover</code> attribute and CSS anchor positioning work well:</p>
+      <Code lang="tsx" themes={themes} code={`const dp = useDatePicker({ locale: 'en-GB' })
+
+<label {...dp.getLabelProps()}>Departure</label>
+<input {...dp.getInputProps()} />
+<button {...dp.getTriggerProps()}>📅</button>
+{dp.state.open && (
+  <div {...dp.getDialogProps()} className="popup">
+    <Calendar dp={dp} />
+  </div>
+)}`} />
+      <p>The input parses the locale's numeric order (<code>29/09/2026</code> in en-GB, <code>09/29/2026</code> in en-US), ISO dates, and Arabic-Indic digits. Add typed shortcuts with <code>parse: withShortcuts()</code> from <code>dayfold/shortcuts</code>.</p>
+
+      <h2 id="forms-seo">Forms, SSR & SEO</h2>
+      <ul>
+        <li><strong>Native forms:</strong> <code>&lt;input {'{...dp.getHiddenInputProps({ name: "date" })}'} /&gt;</code> posts the ISO value. Range mode sends <code>start/end</code>, or one input per end with <code>part: 'start' | 'end'</code>.</li>
+        <li><strong>Server rendering:</strong> the core touches no browser globals at import or render. React uses <code>useId()</code> and Vue uses <code>useId()</code> for hydration-safe ids; pass <code>locale</code> and, if needed, <code>today</code> so server and client agree. Node and browsers can ship different ICU versions, so localised month names may differ slightly — add <code>suppressHydrationWarning</code> to formatted text, or render the calendar only on the client.</li>
+        <li><strong>Machine-readable dates:</strong> <code>&lt;time {'{...dp.getTimeProps()}'}&gt;</code> renders <code>datetime="2026-09-29"</code> for search engines and structured data.</li>
+        <li><strong>No layout shift:</strong> <code>fixedWeeks</code> (default) keeps every month at six rows.</li>
+      </ul>
+
+      <h2 id="recipes">Recipes</h2>
+      <h3>Disable weekends and past dates</h3>
+      <Code lang="ts" themes={themes} code={`import { today, toDate } from 'dayfold'
+
+useDatePicker({
+  min: today(),
+  isDateDisabled: (iso) => [5, 6].includes(toDate(iso).getDay()), // Fri + Sat
+})`} />
+      <h3>Controlled range with Temporal</h3>
+      <Code lang="tsx" themes={themes} code={`const [range, setRange] = useState(null)
+const dp = useDatePicker({ mode: 'range', numberOfMonths: 2, value: range, onValueChange: setRange })
+
+const nights = range?.end
+  ? Temporal.PlainDate.from(range.start).until(range.end).days
+  : 0`} />
+      <h3>Custom day content</h3>
+      <Code lang="tsx" themes={themes} code={`<button {...dp.getDayProps(day)}>
+  {day.label}
+  {prices[day.date] && <small aria-hidden="true">{prices[day.date]}</small>}
+</button>`} />
+      <p>Decorative extras should be <code>aria-hidden</code>; put anything a user needs to hear into <code>labels.day</code>.</p>
+    </article>
+  </main>
+  <footer class="site-footer"><p>dayfold · MIT licensed.</p></footer>
+</Base>

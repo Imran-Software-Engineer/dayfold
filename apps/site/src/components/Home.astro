@@ -1,0 +1,171 @@
+---
+import { Code } from 'astro:components'
+import { type Lang, t } from '../i18n'
+import Base from '../layouts/Base.astro'
+import A11yLab from './A11yLab'
+import CopyButton from './CopyButton'
+import Gallery from './Gallery'
+import Header from './Header.astro'
+import Hero from './Hero'
+import { snippets } from './snippets'
+
+interface Props { lang: Lang }
+const { lang } = Astro.props
+const d = t[lang]
+
+const sizes = [
+  { name: 'dayfold', kb: 6.7, note: lang === 'ar' ? 'المنتقي كاملًا' : 'full picker', us: true },
+  { name: 'cally', kb: 9.2 },
+  { name: 'air-datepicker', kb: 14.2 },
+  { name: 'flatpickr', kb: 14.8 },
+  { name: 'react-day-picker', kb: 18.9 },
+  { name: 'vanilla-calendar-pro', kb: 26.1 },
+  { name: 'react-datepicker', kb: 46.7 },
+]
+const max = Math.max(...sizes.map((s) => s.kb))
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareSourceCode',
+  name: 'dayfold',
+  description: d.description,
+  codeRepository: 'https://www.npmjs.com/package/dayfold',
+  programmingLanguage: ['TypeScript', 'JavaScript'],
+  runtimePlatform: 'Web browser',
+  license: 'https://opensource.org/licenses/MIT',
+  keywords: 'date picker, headless, accessible, hijri, umm al-qura, react, vue',
+  inLanguage: lang,
+}
+const tabs = [
+  { id: 'react', label: 'React', lang: 'tsx', code: snippets.react },
+  { id: 'vue', label: 'Vue', lang: 'vue', code: snippets.vue },
+  { id: 'vanilla', label: 'Vanilla JS', lang: 'js', code: snippets.vanilla },
+] as const
+---
+
+<Base lang={lang} title={d.title} description={d.description} path="/" locales={['en', 'ar']} jsonLd={jsonLd}>
+  <Header lang={lang} />
+  <main id="main">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="eyebrow">{d.eyebrow}</p>
+        <h1 id="hero-title">
+          <span>{d.heroTitle[0]}</span>
+          <span class="fold-word">{d.heroTitle[1]}</span>
+          <span>{d.heroTitle[2]}</span>
+        </h1>
+        <p class="lead">{d.heroLead}</p>
+        <div class="install" dir="ltr">
+          <code><span aria-hidden="true">$ </span>npm i dayfold</code>
+          <CopyButton client:idle text="npm i dayfold" label={d.copy} done={d.copied} />
+        </div>
+        <p><a class="cta" href="/docs/">{d.readDocs} <span aria-hidden="true">{lang === 'ar' ? '←' : '→'}</span></a></p>
+      </div>
+      <Hero client:load lang={lang} />
+    </section>
+
+    <section id="gallery" class="band" aria-labelledby="gallery-title">
+      <div class="section-head">
+        <h2 id="gallery-title">{d.galleryTitle}</h2>
+        <p>{d.galleryLead}</p>
+      </div>
+      <Gallery client:idle lang={lang} />
+    </section>
+
+    <section class="band" aria-labelledby="features-title">
+      <div class="section-head"><h2 id="features-title">{d.featuresTitle}</h2></div>
+      <ul class="features">
+        {d.features.map(([title, body], i) => (
+          <li>
+            <span class="feature-num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+            <h3>{title}</h3>
+            <p>{body}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section id="accessibility" class="band" aria-labelledby="a11y-title">
+      <div class="section-head">
+        <h2 id="a11y-title">{d.a11yTitle}</h2>
+        <p>{d.a11yLead}</p>
+      </div>
+      <div class="a11y-grid">
+        <ul class="checklist">
+          {d.a11yList.map((item) => <li>{item}</li>)}
+        </ul>
+        <A11yLab client:idle lang={lang} />
+      </div>
+    </section>
+
+    <section id="size" class="band" aria-labelledby="size-title">
+      <div class="section-head">
+        <h2 id="size-title">{d.sizeTitle}</h2>
+        <p>{d.sizeLead}</p>
+      </div>
+      <figure class="sizes">
+        <table>
+          <caption class="sr-only">{d.sizeTitle}</caption>
+          <thead class="sr-only"><tr><th scope="col">Package</th><th scope="col">kB (min+gzip)</th></tr></thead>
+          <tbody>
+            {sizes.map((s) => (
+              <tr class={s.us ? 'us' : undefined}>
+                <th scope="row" dir="ltr">{s.name}</th>
+                <td>
+                  <span class="bar" style={`--w:${(s.kb / max) * 100}%`} aria-hidden="true"></span>
+                  <span class="kb" dir="ltr">{s.kb.toFixed(1)} kB</span>
+                  {s.note && <span class="note">{s.note}</span>}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <figcaption>{d.sizeNote}</figcaption>
+      </figure>
+    </section>
+
+    <section class="band" aria-labelledby="code-title">
+      <div class="section-head"><h2 id="code-title">{d.codeTitle}</h2></div>
+      <div class="tabs" dir="ltr" data-tabs>
+        <div role="tablist" aria-label={d.codeTitle}>
+          {tabs.map((tab, i) => (
+            <button role="tab" id={`tab-${tab.id}`} aria-controls={`panel-${tab.id}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1}>{tab.label}</button>
+          ))}
+        </div>
+        {tabs.map((tab, i) => (
+          <div role="tabpanel" id={`panel-${tab.id}`} aria-labelledby={`tab-${tab.id}`} tabindex="0" hidden={i !== 0}>
+            <Code code={tab.code} lang={tab.lang} themes={{ light: 'github-light-high-contrast', dark: 'github-dark-high-contrast' }} />
+          </div>
+        ))}
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <p>dayfold · {d.footer}</p>
+  </footer>
+</Base>
+
+<script>
+  // WAI-ARIA tabs: arrow keys move between tabs, selection follows focus.
+  for (const root of document.querySelectorAll<HTMLElement>('[data-tabs]')) {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')]
+    const activate = (tab: HTMLButtonElement) => {
+      for (const t of tabs) {
+        const on = t === tab
+        t.setAttribute('aria-selected', String(on))
+        t.tabIndex = on ? 0 : -1
+        document.getElementById(t.getAttribute('aria-controls')!)!.hidden = !on
+      }
+      tab.focus()
+    }
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => activate(tab))
+      tab.addEventListener('keydown', (e) => {
+        const next = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 }[e.key]
+        if (next === undefined) return
+        e.preventDefault()
+        activate(tabs[(next + tabs.length) % tabs.length])
+      })
+    })
+  }
+</script>

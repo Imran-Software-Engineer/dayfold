@@ -1,0 +1,26 @@
+---
+import { type Lang, t } from '../i18n'
+interface Props { lang: Lang; path?: string }
+const { lang, path = '/' } = Astro.props
+const d = t[lang]
+const home = lang === 'ar' ? '/ar/' : '/'
+---
+<header class="site-header">
+  <a class="brand" href={home} aria-label="dayfold home">
+    <svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true">
+      <path d="M4 6h24v20H4z" fill="var(--paper-2)" stroke="currentColor" stroke-width="2" />
+      <path d="M4 12h24" stroke="currentColor" stroke-width="2" />
+      <path d="M18 26l10-10v10z" fill="var(--accent)" />
+    </svg>
+    <span>dayfold</span>
+  </a>
+  <nav aria-label={lang === 'ar' ? 'رئيسي' : 'Main'}>
+    <ul>
+      <li><a href={`${home}#gallery`}>{d.nav.gallery}</a></li>
+      <li><a href={`${home}#accessibility`}>{d.nav.a11y}</a></li>
+      <li><a href={`${home}#size`}>{d.nav.size}</a></li>
+      <li><a href="/docs/">{d.nav.docs}</a></li>
+      <li><a href={lang === 'ar' ? '/' : '/ar/'} hreflang={lang === 'ar' ? 'en' : 'ar'} lang={lang === 'ar' ? 'en' : 'ar'}>{d.nav.lang}</a></li>
+    </ul>
+  </nav>
+</header>

@@ -207,8 +207,11 @@ describe('accessibility props', () => {
     expect(dp.getTriggerProps()).toMatchObject({
       'aria-haspopup': 'dialog',
       'aria-expanded': 'false',
-      'aria-controls': 'x-dialog',
     })
+    expect(dp.getTriggerProps()['aria-controls']).toBeUndefined()
+    dp.setOpen(true)
+    expect(dp.getTriggerProps()['aria-controls']).toBe('x-dialog')
+    dp.setOpen(false)
     expect(dp.getDialogProps()).toMatchObject({
       id: 'x-dialog',
       role: 'dialog',
